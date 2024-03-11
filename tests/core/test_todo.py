@@ -43,18 +43,18 @@ def test_get_metadata_contexts():
 
 
 def test_get_metadata_recurrence_days():
-    todo = TodoItem("rec:5d")
-    assert todo.recurrence == 5
+    todo = TodoItem("t rec:5d")
+    assert todo.recurrence == "5d"
 
 
 def test_get_metadata_recurrence_weeks():
-    todo = TodoItem("rec:2w")
-    assert todo.recurrence == 14
+    todo = TodoItem("t rec:2w")
+    assert todo.recurrence == "2w"
 
 
 def test_get_metadata_recurrence_months():
-    todo = TodoItem("rec:3m")
-    assert todo.recurrence == 90
+    todo = TodoItem("t rec:3m")
+    assert todo.recurrence == "3m"
 
 
 def test_get_metadata_invalid_recurrence():
@@ -63,7 +63,7 @@ def test_get_metadata_invalid_recurrence():
 
 
 def test_get_metadata_due_date():
-    todo = TodoItem("due:2022-12-31")
+    todo = TodoItem("t due:2022-12-31")
     assert todo.due == datetime.strptime("2022-12-31", "%Y-%m-%d")
 
 

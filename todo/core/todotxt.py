@@ -4,12 +4,14 @@ from pathlib import Path
 from shutil import copy2
 from typing import List, Optional, Union, overload
 
+from dateutil.relativedelta import relativedelta
+
 from .todo import TodoItem
 
 
 @dataclass
 class TodoTxt:
-    file_path: str
+    file_path: str = "data/test.txt"
     todo_list: Optional[List[TodoItem]] = None
     _path: Path = field(init=False, repr=False)
     _init: bool = field(init=False, default=False)
@@ -46,16 +48,22 @@ class TodoTxt:
         todo.done()
         if todo.recurrence:
             description = todo.description
-            due = datetime.now() + timedelta(days=todo.recurrence)
-            if todo.due:
-                description.replace(f"due:{todo.due.strftime('%Y-%m-%d')}", f"due:{due.strftime('%Y-%m-%d')}")
-            else:
-                description += f" due:{due.strftime('%Y-%m-%d')}"
+            if todo.recurrence.endswith("d"):
+                delta = timedelta(days=int(todo.recurrence[:-1]))
+            elif todo.recurrence.endswith("w"):
+                delta = timedelta(weeks=int(todo.recurrence[:-1]))
+            elif todo.recurrence.endswith("m"):
+                delta = relativedelta(months=1)
+            elif todo.recurrence.endswith("y"):
+                delta = relativedelta(years=1)
+            due = datetime.now() + delta
             new_todo = TodoItem(
                 completed=False,
                 priority=todo.priority,
                 creation_date=datetime.now(),
                 description=description,
+                recurrence=todo.recurrence,
+                due=due,
             )
             self.append(new_todo)
         self._save()

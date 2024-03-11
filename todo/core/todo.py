@@ -5,8 +5,8 @@ from typing import List, Literal, Optional
 
 
 def is_date(date: str) -> bool:
-    match = re.compile(r"\d{4}-\d{2}-\d{2}")
-    return bool(match.match(date))
+    pattern = re.compile(r"\d{4}-\d{2}-\d{2}")
+    return bool(pattern.match(date))
 
 
 @dataclass
@@ -16,52 +16,90 @@ class TodoItem:
     priority: Optional[Literal["A", "B", "C", "D", "E"]] = field(default=None, compare=False)
     completion_date: Optional[datetime] = field(default=None, compare=False)
     creation_date: Optional[datetime] = field(default_factory=datetime.now)
+    recurrence: Optional[str] = field(compare=True, default=None)
+    due: Optional[datetime] = field(compare=True, default=None)
     project: List[str] = field(init=False, compare=False, default_factory=list)
     context: List[str] = field(init=False, compare=False, default_factory=list)
-    recurrence: Optional[str] = field(init=False, compare=False, default=None)
-    due: Optional[datetime] = field(init=False, compare=False, default=None)
 
     def __post_init__(self):
         assert self.creation_date is None or self.completion_date is None or self.creation_date <= self.completion_date
-        self._get_metadata()
+        self._validate()
 
-    def _get_metadata(self):
-        if self.description == "":
-            raise ValueError("No description")
+    @staticmethod
+    def _validate_x(x: str) -> bool:
+        if x == "x":
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def _validate_not_date(date: str) -> None:
+        if is_date(date):
+            try:
+                datetime.strptime(date, "%Y-%m-%d")
+                flag = True
+            except ValueError:
+                flag = False
+            if flag:
+                raise ValueError("Invalid date")
+
+    @staticmethod
+    def _validate_date(date: str, info: str = "") -> Optional[bool]:
+        if is_date(date):
+            try:
+                return datetime.strptime(date, "%Y-%m-%d")
+            except ValueError as err:
+                raise ValueError(f"Invalid {info} date") from err
+        else:
+            return None
+
+    @staticmethod
+    def _validate_priority(priority: str) -> Optional[bool]:
+        if priority.startswith("(") and priority.endswith(")"):
+            priority = priority[1]
+            if priority in ["A", "B", "C", "D", "E"]:
+                return priority
+        return None
+
+    @staticmethod
+    def _validate_recurrence(recurrence: str) -> Optional[str]:
+        pattern = re.compile(r"rec:\d+[dwmy]")
+        if pattern.match(recurrence):
+            return recurrence[4:]
+        else:
+            raise ValueError("Invalid recurrence format")
+
+    def _validate(self):
+        self.description = self.description.strip()
         tags = self.description.split(" ")
-        for tag in tags:
-            if is_date(tag):
-                try:
-                    datetime.strptime(tag, "%Y-%m-%d")
-                    flag = True
-                except Exception:
-                    flag = False
-                if flag:
-                    raise ValueError("Invalid multiple date")
+        for tag in tags.copy():
+            self._validate_not_date(tag)
             if tag.startswith("+"):
                 self.project.append(tag[1:])
+                continue
             if tag.startswith("@"):
                 self.context.append(tag[1:])
+                continue
             if tag.startswith("rec:"):
                 if self.recurrence is not None:
                     raise ValueError("Recurrence already set")
-                recurrence = re.match(r"rec:(\d+)(.*)", tag)
-                num = int(recurrence.group(1))
-                period = recurrence.group(2)
-                if period == "d":
-                    self.recurrence = num
-                elif period == "w":
-                    self.recurrence = num * 7
-                elif period == "m":
-                    self.recurrence = num * 30
-                else:
-                    raise ValueError("Invalid period")
+                self.recurrence = self._validate_recurrence(tag)
+                tags.remove(tag)
+                continue
             if tag.startswith("due:"):
                 if self.due is not None:
                     raise ValueError("Due date already set")
-                if not is_date(tag[4:]):
+                self.due = self._validate_date(tag[4:], "due")
+                if self.due:
+                    tags.remove(tag)
+                else:
                     raise ValueError("Invalid due date")
-                self.due = datetime.strptime(tag[4:], "%Y-%m-%d")
+                continue
+        if len(tags) == 0:
+            raise ValueError("No description")
+        self.description = " ".join(tags)
+        if self.description == "":
+            raise ValueError("No description")
 
     def __str__(self):
         strings = []
@@ -74,6 +112,10 @@ class TodoItem:
         if self.creation_date:
             strings.append(self.creation_date.strftime("%Y-%m-%d"))
         strings.append(self.description)
+        if self.recurrence is not None:
+            strings.append(f"rec:{self.recurrence}")
+        if self.due:
+            strings.append(f"due:{self.due.strftime('%Y-%m-%d')}")
         return " ".join(strings)
 
     def done(self):
@@ -83,35 +125,34 @@ class TodoItem:
     @classmethod
     def from_string(cls, todo: str) -> "TodoItem":
         todo = todo.strip().split(" ")
-        if todo[0] == "x":
-            completed = True
+
+        # Check if the todo is completed
+        completed = cls._validate_x(todo[0])
+        if completed:
             todo = todo[1:]
-        else:
-            completed = False
-        if todo[0].startswith("(") and todo[0].endswith(")"):
-            priority = todo[0][1]
+
+        # Check if the todo has a priority
+        priority = cls._validate_priority(todo[0])
+        if priority:
             todo = todo[1:]
-        else:
-            priority = None
-        if completed is True and is_date(todo[0]):
-            try:
-                completion_date = datetime.strptime(todo[0], "%Y-%m-%d")
-            except ValueError as err:
-                raise ValueError("Invalid completion date") from err
-            todo = todo[1:]
+
+        # Check if the todo has a completion date
+        if completed is True:
+            completion_date = cls._validate_date(todo[0], "completion")
+            if completion_date:
+                todo = todo[1:]
         else:
             completion_date = None
-        if is_date(todo[0]):
-            try:
-                creation_date = datetime.strptime(todo[0], "%Y-%m-%d")
-            except ValueError as err:
-                raise ValueError("Invalid creation date") from err
+
+        # Check if the todo has a creation date
+        creation_date = cls._validate_date(todo[0], "creation")
+        if creation_date:
             todo = todo[1:]
-        else:
-            creation_date = None
-        if len(todo) == 0 or todo[0] == "":
-            raise ValueError("No description")
+
+        # The rest of the todo is the description
         description = " ".join(todo)
+
+        # Return a new TodoItem instance
         return cls(
             completed=completed,
             priority=priority,
