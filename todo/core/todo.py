@@ -22,8 +22,48 @@ class TodoItem:
     context: List[str] = field(init=False, compare=False, default_factory=list)
 
     def __post_init__(self):
-        assert self.creation_date is None or self.completion_date is None or self.creation_date <= self.completion_date
+        assert (
+            self.creation_date is None
+            or self.completion_date is None
+            or self.creation_date.date() <= self.completion_date.date()
+        )
         self._validate()
+
+    def done(self):
+        self.completed = True
+        self.completion_date = datetime.now().date()
+
+    def _validate(self) -> None:
+        self.description = self.description.strip()
+        tags = self.description.split(" ")
+        for tag in tags.copy():
+            self._validate_not_date(tag)
+            if tag.startswith("+"):
+                self.project.append(tag[1:])
+                continue
+            if tag.startswith("@"):
+                self.context.append(tag[1:])
+                continue
+            if tag.startswith("rec:"):
+                if self.recurrence is not None:
+                    raise ValueError("Recurrence already set")
+                self.recurrence = self._validate_recurrence(tag)
+                tags.remove(tag)
+                continue
+            if tag.startswith("due:"):
+                if self.due is not None:
+                    raise ValueError("Due date already set")
+                self.due = self._validate_date(tag[4:], "due")
+                if self.due:
+                    tags.remove(tag)
+                else:
+                    raise ValueError("Invalid due date")
+                continue
+        if len(tags) == 0:
+            raise ValueError("No description")
+        self.description = " ".join(tags)
+        if self.description == "":
+            raise ValueError("No description")
 
     @staticmethod
     def _validate_x(x: str) -> bool:
@@ -69,38 +109,6 @@ class TodoItem:
         else:
             raise ValueError("Invalid recurrence format")
 
-    def _validate(self):
-        self.description = self.description.strip()
-        tags = self.description.split(" ")
-        for tag in tags.copy():
-            self._validate_not_date(tag)
-            if tag.startswith("+"):
-                self.project.append(tag[1:])
-                continue
-            if tag.startswith("@"):
-                self.context.append(tag[1:])
-                continue
-            if tag.startswith("rec:"):
-                if self.recurrence is not None:
-                    raise ValueError("Recurrence already set")
-                self.recurrence = self._validate_recurrence(tag)
-                tags.remove(tag)
-                continue
-            if tag.startswith("due:"):
-                if self.due is not None:
-                    raise ValueError("Due date already set")
-                self.due = self._validate_date(tag[4:], "due")
-                if self.due:
-                    tags.remove(tag)
-                else:
-                    raise ValueError("Invalid due date")
-                continue
-        if len(tags) == 0:
-            raise ValueError("No description")
-        self.description = " ".join(tags)
-        if self.description == "":
-            raise ValueError("No description")
-
     def __str__(self):
         strings = []
         if self.completed:
@@ -117,10 +125,6 @@ class TodoItem:
         if self.due:
             strings.append(f"due:{self.due.strftime('%Y-%m-%d')}")
         return " ".join(strings)
-
-    def done(self):
-        self.completed = True
-        self.completion_date = datetime.now()
 
     @classmethod
     def from_string(cls, todo: str) -> "TodoItem":

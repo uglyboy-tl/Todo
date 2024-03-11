@@ -11,22 +11,18 @@ from .todo import TodoItem
 
 @dataclass
 class TodoTxt:
-    file_path: str = "data/test.txt"
+    file_path: str = "data/test/test.txt"
     todo_list: Optional[List[TodoItem]] = None
+    read_only: bool = False
     _path: Path = field(init=False, repr=False)
     _init: bool = field(init=False, default=False)
 
     def __post_init__(self):
         self._path = Path(self.file_path)
-        if not self._path.exists():
-            self._path.parent.mkdir(parents=True, exist_ok=True)
-            self.todo_list = []
-            self._init = True
-        elif self.todo_list is None:
+        if self.todo_list is None:
             self._load()
         else:
             self._init = True
-        self._sort()
 
     def append(self, todo: TodoItem):
         self.todo_list.append(todo)
@@ -65,10 +61,25 @@ class TodoTxt:
                 recurrence=todo.recurrence,
                 due=due,
             )
-            self.append(new_todo)
+            self.todo_list.append(new_todo)
         self._save()
 
-    def _sort(self):
+    def achieve(self, done_file: Optional[str] = None):
+        if self.read_only:
+            return
+        if done_file is None:
+            done_file = self._path.with_name("done.txt")
+        else:
+            done_file = Path(done_file)
+        done_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(done_file, "a") as file:
+            for todo in self.todo_list:
+                if todo.completed:
+                    file.write(str(todo) + "\n")
+        self.todo_list = [todo for todo in self.todo_list if not todo.completed]
+        self._save()
+
+    def sort(self):
         self.todo_list = sorted(
             self.todo_list,
             key=lambda x: (
@@ -78,9 +89,16 @@ class TodoTxt:
                 x.creation_date if x.creation_date is not None else datetime.max,
             ),
         )
+        self._save()
+
+    def alert(self):
+        todo_list = [todo for todo in self.todo_list if todo.due and todo.due.date() == datetime.now().date()]
+        todotxt = TodoTxt(todo_list=todo_list, read_only=True)
+        return todotxt
 
     def _save(self):
-        self._sort()
+        if self.read_only:
+            return
         if self._path.exists() and not self._init:
             self._backup()
         if self.todo_list or not self._init:
@@ -88,7 +106,12 @@ class TodoTxt:
             self._init = False
 
     def _load(self):
-        self.todo_list = [TodoItem.from_string(todo) for todo in self._path.read_text().split("\n")]
+        if not self._path.exists():
+            self._path.parent.mkdir(parents=True, exist_ok=True)
+            self._init = True
+            self.todo_list = []
+        else:
+            self.todo_list = [TodoItem.from_string(todo) for todo in self._path.read_text().split("\n")]
 
     def _backup(self):
         backup_path = self._path.with_suffix(self._path.suffix + "." + datetime.now().strftime("%Y%m%d%H%M%S") + ".bak")
@@ -97,8 +120,19 @@ class TodoTxt:
     def __iter__(self):
         return iter(self.todo_list)
 
-    def __getitem__(self, index: int):
-        return self.todo_list[index]
+    @overload
+    def __getitem__(self, index: int) -> TodoItem:
+        pass
+
+    @overload
+    def __getitem__(self, index: str) -> List[TodoItem]:
+        pass
+
+    def __getitem__(self, index: Union[int, str]):
+        if isinstance(index, int):
+            return self.todo_list[index]
+        elif isinstance(index, str):
+            return TodoTxt(todo_list=[todo for todo in self.todo_list if index in todo.project], read_only=True)
 
     def __contains__(self, todo: TodoItem):
         return todo in self.todo_list
