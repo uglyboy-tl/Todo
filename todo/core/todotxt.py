@@ -110,9 +110,6 @@ class TodoTxt:
         else:
             self.todo_list = [TodoItem.from_string(todo) for todo in self._path.read_text().split("\n")]
 
-    def _close(self):
-        self._save()
-
     def _backup(self):
         backup_path = self._path.with_suffix(self._path.suffix + "." + datetime.now().strftime("%Y%m%d%H%M%S") + ".bak")
         copy2(self._path, backup_path)
@@ -147,4 +144,4 @@ class TodoTxt:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._close()
+        self._save()
