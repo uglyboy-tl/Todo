@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 python-dateutil = "^2.9.0.post0"
+stevedore = "^5.2.0"
 
 
 [tool.poetry.group.test.dependencies]

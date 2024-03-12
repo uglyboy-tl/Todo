@@ -26,7 +26,6 @@ class TodoTxt:
 
     def append(self, todo: TodoItem):
         self.todo_list.append(todo)
-        self._save()
 
     @overload
     def done(self, todo: int):
@@ -62,7 +61,6 @@ class TodoTxt:
                 due=due,
             )
             self.todo_list.append(new_todo)
-        self._save()
 
     def achieve(self, done_file: Optional[str] = None):
         if self.read_only:
@@ -89,9 +87,8 @@ class TodoTxt:
                 x.creation_date if x.creation_date is not None else datetime.max,
             ),
         )
-        self._save()
 
-    def alert(self):
+    def alert(self) -> "TodoTxt":
         todo_list = [todo for todo in self.todo_list if todo.due and todo.due.date() == datetime.now().date()]
         todotxt = TodoTxt(todo_list=todo_list, read_only=True)
         return todotxt
@@ -113,6 +110,9 @@ class TodoTxt:
         else:
             self.todo_list = [TodoItem.from_string(todo) for todo in self._path.read_text().split("\n")]
 
+    def _close(self):
+        self._save()
+
     def _backup(self):
         backup_path = self._path.with_suffix(self._path.suffix + "." + datetime.now().strftime("%Y%m%d%H%M%S") + ".bak")
         copy2(self._path, backup_path)
@@ -125,7 +125,7 @@ class TodoTxt:
         pass
 
     @overload
-    def __getitem__(self, index: str) -> List[TodoItem]:
+    def __getitem__(self, index: str) -> "TodoTxt":
         pass
 
     def __getitem__(self, index: Union[int, str]):
@@ -142,3 +142,9 @@ class TodoTxt:
 
     def __str__(self):
         return "\n".join([str(todo) for todo in self.todo_list])
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._close()
