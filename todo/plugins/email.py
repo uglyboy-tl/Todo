@@ -27,7 +27,7 @@ class Email(BaseNotify):
         if not pattern.match(id):
             raise ValueError("Invalid email address")
 
-    def __call__(self, todo: TodoItem, todotxt: TodoTxt):
+    def __call__(self, todo: TodoItem, todotxt: TodoTxt, _=lambda x, _: x):
         msg = MIMEText(f"{str(todo)}", "plain", "utf-8")
         msg["Subject"] = "[代办提醒]" + todo.description
         msg["From"] = "Notice <" + self.email + ">"
