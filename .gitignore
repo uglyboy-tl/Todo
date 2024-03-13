@@ -1,6 +1,7 @@
 # Project specific files
 data/
 /*.py
+test.yaml
 
 # IDE - specific files
 .vs/

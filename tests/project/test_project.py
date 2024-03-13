@@ -81,7 +81,7 @@ def test_call_with_no_contexts():
 
 def test_config_load():
     # Setup
-    file_path = "tests/project/example.yaml"
+    file_path = "test.yaml"
     data = {
         "name": "example",
     }
@@ -100,7 +100,7 @@ def test_config_load():
 
 def test_config_load_with_data():
     # Setup
-    file_path = "tests/project/example.yaml"
+    file_path = "test.yaml"
     data = {
         "name": "example",
         "context_configs": [
@@ -140,7 +140,7 @@ def project_init(file_path: str):
 
 def test_project_load():
     # Setup
-    file_path = "tests/project/example.yaml"
+    file_path = "test.yaml"
     project_init(file_path)
     project = Project.load(file_path)
     assert len(project.contexts) == 2
@@ -162,7 +162,7 @@ def test_project_load():
 
 def test_project_load_contexts():
     # Setup
-    file_path = "tests/project/example.yaml"
+    file_path = "test.yaml"
     project_init(file_path)
     todo_txt = TodoTxt(todo_list=[])
     project = Project.load(file_path)
