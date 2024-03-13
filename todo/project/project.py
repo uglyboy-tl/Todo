@@ -26,7 +26,7 @@ class Config(BaseModel):
 @dataclass
 class Project:
     name: str = ""
-    contexts: List[BaseContext] = field(init=False, default_factory=list)
+    contexts: List[BaseContext] = field(default_factory=list)
 
     def __call__(self, todotxt: TodoTxt):
         for todo in todotxt[self.name].alert():
@@ -45,6 +45,6 @@ class Project:
             if context["type"] not in context_type_set:
                 logger.warning(f"Function {context['type']} not found, skipping")
                 continue
-            context = context_plugins[context.get("type")].plugin(**context)
+            context = context_plugins[context.pop("type")].plugin(**context)
             contexts.append(context)
         return cls(config.name, contexts)
