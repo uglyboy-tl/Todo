@@ -1,0 +1,6 @@
+context_configs:
+- name: alert
+  priority: 1
+- name: reminder
+  priority: 2
+name: example
