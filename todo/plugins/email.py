@@ -4,7 +4,7 @@ import time
 from dataclasses import dataclass, field
 from email.mime.text import MIMEText
 
-from todo.core import TodoItem
+from todo.core import TodoItem, TodoTxt
 from todo.project import BaseNotify
 from todo.utils import config
 
@@ -27,7 +27,7 @@ class Email(BaseNotify):
         if not pattern.match(id):
             raise ValueError("Invalid email address")
 
-    def __call__(self, todo: TodoItem):
+    def __call__(self, todo: TodoItem, todotxt: TodoTxt):
         msg = MIMEText(f"{str(todo)}", "plain", "utf-8")
         msg["Subject"] = "[代办提醒]" + todo.description
         msg["From"] = "Notice <" + self.email + ">"
