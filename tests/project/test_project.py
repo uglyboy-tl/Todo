@@ -14,15 +14,16 @@ TODAY = time.strftime("%Y-%m-%d")
 class TestContext1(BaseContext):
     name: str = "alert"
 
-    def __call__(self, todo, todotxt):
-        todotxt.append(TodoItem("Test New todo"))
+    def __call__(self, todo, todotxt: TodoTxt, format=lambda x, _: x):
+        format(TodoItem("Test New todo"), 1)
+        todotxt.done(todo)
 
 
 @dataclass
 class TestContext2(BaseContext):
     name: str = "alert"
 
-    def __call__(self, todo, todotxt):
+    def __call__(self, todo, _, __):
         todo.description = "Modified"
 
 
@@ -129,9 +130,9 @@ def project_init(file_path: str):
     data = {
         "name": "example",
         "context_configs": [
-            {"name": "reminder", "type": "test1"},
+            {"name": "addone", "type": "test1"},
             {"type": "test2"},
-            {"name": "reminder", "type": "notest"},
+            {"name": "addone", "type": "notest"},
         ],
     }
     with open(file_path, "w") as f:
@@ -153,11 +154,12 @@ def test_project_load():
     assert todo_item.description == "Modified"
 
     todo_txt2 = TodoTxt(todo_list=[])
-    todo_item = TodoItem(f"Test todo @reminder +example due:{TODAY}")
+    todo_item = TodoItem(f"Test todo @addone +example due:{TODAY}")
     todo_txt2.append(todo_item)
     project(todo_txt2)
     assert len(todo_txt2) == 2
-    assert todo_txt2[1].description == "Test New todo"
+    assert todo_txt2[0].completed is True
+    assert todo_txt2[1].description == "Test New todo +example"
 
 
 def test_project_load_contexts():
@@ -170,15 +172,17 @@ def test_project_load_contexts():
     reminder = project.contexts[0]
     alert = project.contexts[1]
 
-    assert reminder.name == "reminder"
+    assert reminder.name == "addone"
     assert alert.name == "alert"
     # assert isinstance(reminder, TestContext)
 
     todo_item = TodoItem(f"Test todo @alert +example due:{TODAY}")
+    todo_txt.append(todo_item)
     reminder(todo_item, todo_txt)
     assert len(todo_txt) == 1
-    assert todo_txt[0].description == "Test New todo"
+    assert todo_item.completed is True
+    # assert todo_txt[0].description == "Test New todo"
 
     todo_item = TodoItem(f"Test todo @alert +example due:{TODAY}")
-    alert(todo_item, todo_txt)
+    alert(todo_item, todo_txt, lambda x, _: x)
     assert todo_item.description == "Modified"
