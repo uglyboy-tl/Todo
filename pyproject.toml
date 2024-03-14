@@ -12,6 +12,7 @@ stevedore = "^5.2.0"
 loguru = "^0.7.2"
 pyyaml = "^6.0.1"
 pydantic = "^2.6.4"
+gotify = "^0.6.0"
 
 
 [tool.poetry.group.test.dependencies]
@@ -22,6 +23,7 @@ pytest-mock = "^3.12.0"
 test1 = "tests.project.test_project:TestContext1"
 test2 = "tests.project.test_project:TestContext2"
 email = "todo.plugins.email:Email"
+gotify = "todo.plugins.gotify:Gotify"
 
 [build-system]
 requires = ["poetry-core"]
