@@ -77,7 +77,7 @@ class TodoTxt:
         self.todo_list = [todo for todo in self.todo_list if not todo.completed]
         self._save()
 
-    def sort(self):
+    def sort(self) -> "TodoTxt":
         self.todo_list = sorted(
             self.todo_list,
             key=lambda x: (
@@ -87,9 +87,14 @@ class TodoTxt:
                 x.creation_date if x.creation_date is not None else datetime.max,
             ),
         )
+        return self
 
     def alert(self) -> "TodoTxt":
-        todo_list = [todo for todo in self.todo_list if todo.due and todo.due.date() == datetime.now().date()]
+        todo_list = [
+            todo
+            for todo in self.todo_list
+            if todo.due and todo.due.date() == datetime.now().date() and not todo.completed
+        ]
         todotxt = TodoTxt(todo_list=todo_list, read_only=True)
         return todotxt
 

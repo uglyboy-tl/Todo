@@ -30,7 +30,7 @@ class Project:
     config: Config = field(default_factory=Config)
 
     def __call__(self, todotxt: TodoTxt):
-        todolist = todotxt[self.name].alert().todo_list
+        todolist = todotxt[self.name].alert().sort().todo_list
 
         def format(todo: TodoItem, type=0):
             if type == 1:
