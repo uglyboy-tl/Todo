@@ -127,7 +127,7 @@ def test_todo_item_to_string_completed():
         completed=True,
         completion_date=datetime.strptime("2022-01-02", "%Y-%m-%d"),
         creation_date=datetime.strptime("2022-01-01", "%Y-%m-%d"),
-        description="Test todo item",
+        _description="Test todo item",
     )
     expected_output = "x 2022-01-02 2022-01-01 Test todo item"
     assert str(todo) == expected_output
@@ -137,7 +137,7 @@ def test_todo_item_to_string_incomplete():
     todo = TodoItem(
         completed=False,
         creation_date=datetime.strptime("2022-01-02", "%Y-%m-%d"),
-        description="Test todo item",
+        _description="Test todo item",
     )
     expected_output = "2022-01-02 Test todo item"
     assert str(todo) == expected_output
@@ -147,7 +147,7 @@ def test_todo_item_to_string_with_priority():
     todo = TodoItem(
         completed=False,
         creation_date=datetime.strptime("2022-01-02", "%Y-%m-%d"),
-        description="Test todo item",
+        _description="Test todo item",
         priority="A",
     )
     expected_output = "(A) 2022-01-02 Test todo item"
@@ -158,7 +158,7 @@ def test_todo_item_to_string_no_completion_date():
     todo = TodoItem(
         completed=True,
         creation_date=datetime.strptime("2022-01-02", "%Y-%m-%d"),
-        description="Test todo item",
+        _description="Test todo item",
     )
     expected_output = "x 2022-01-02 Test todo item"
     assert str(todo) == expected_output
@@ -168,14 +168,14 @@ def test_todo_item_to_string_no_creation_date():
     todo = TodoItem(
         completed=True,
         completion_date=datetime.strptime("2025-01-01", "%Y-%m-%d"),
-        description="Test todo item",
+        _description="Test todo item",
     )
     expected_output = f"x 2025-01-01 {datetime.now().strftime('%Y-%m-%d')} Test todo item"
     assert str(todo) == expected_output
 
 
 def test_todo_item_to_string_no_dates():
-    todo = TodoItem(completed=False, description="Test todo item", creation_date=None)
+    todo = TodoItem(completed=False, _description="Test todo item", creation_date=None)
     expected_output = "Test todo item"
     assert str(todo) == expected_output
 
@@ -185,7 +185,7 @@ def test_todo_item_to_string_empty_description():
         TodoItem(
             completed=False,
             creation_date=datetime.strptime("2022-01-02", "%Y-%m-%d"),
-            description="",
+            _description="",
         )
 
 
