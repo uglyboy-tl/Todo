@@ -1,13 +1,14 @@
+import json
 from dataclasses import dataclass
 from typing import Optional
-from urllib import error, request
+from urllib import error, parse, request
 
 from loguru import logger
 
 from todo.core import TodoItem, TodoTxt
 from todo.project import BaseContext
 
-WEATHER_URL = "https://{}wttr.in/{}?format=%C+%t+%w"
+WEATHER_URL = "https://{}wttr.in/{}?format=j1"
 
 
 @dataclass
@@ -19,9 +20,13 @@ class Weather(BaseContext):
         subdomain: str = f"{self.language}." if self.language != "en" else ""
         location: str = self.location or ""
         try:
-            with request.urlopen(WEATHER_URL.format(subdomain, location)) as response:
+            with request.urlopen(WEATHER_URL.format(subdomain, parse.quote(location))) as response:
                 content = response.read().decode("utf-8")
-            notify = TodoItem(content)
+                data = json.loads(content)
+            weather = f"今日天气: {data['current_condition'][0]['lang_zh'][0]['value']}。"
+            weather += f"气温：{data['weather'][0]['mintempC']}°C-{data['weather'][0]['maxtempC']}°C，现在温度：{data['current_condition'][0]['temp_C']}°C，风力：{data['current_condition'][0]['windspeedKmph']}km/h\n"
+
+            notify = TodoItem(weather)
             notify.add_context("notify")
             format(notify, 1)
             todotxt.done(todo)
