@@ -34,7 +34,7 @@ def test_email_notification():
         email(todo, todotxt)
 
         msg = MIMEText(f"{str(todo)}", "plain", "utf-8")
-        msg["Subject"] = "[代办提醒]" + todo.description
+        msg["Subject"] = "[代办提醒]" + todo.message
         msg["From"] = "Notice <" + email.email + ">"
         msg["To"] = email.id
         msg["Date"] = time.strftime("%a, %d %b %Y %H:%M:%S %z")

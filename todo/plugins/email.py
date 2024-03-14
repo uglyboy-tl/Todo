@@ -28,8 +28,8 @@ class Email(BaseNotify):
             raise ValueError("Invalid email address")
 
     def __call__(self, todo: TodoItem, todotxt: TodoTxt, _=lambda x, _: x):
-        msg = MIMEText(f"{todo.message}", "plain", "utf-8")
-        msg["Subject"] = "[代办提醒]" + todo.description
+        msg = MIMEText(f"{str(todo)}", "plain", "utf-8")
+        msg["Subject"] = "[代办提醒]" + todo.message
         msg["From"] = "Notice <" + self.email + ">"
         msg["To"] = self.id
         msg["Date"] = time.strftime("%a, %d %b %Y %H:%M:%S %z")
