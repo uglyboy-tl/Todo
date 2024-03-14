@@ -24,6 +24,7 @@ test1 = "tests.project.test_project:TestContext1"
 test2 = "tests.project.test_project:TestContext2"
 email = "todo.plugins.email:Email"
 gotify = "todo.plugins.gotify:Gotify"
+weather = "todo.plugins.weather:Weather"
 
 [build-system]
 requires = ["poetry-core"]

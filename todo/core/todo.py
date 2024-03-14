@@ -37,6 +37,7 @@ class TodoItem:
     def _validate(self) -> None:
         self._description = self._description.strip()
         tags = self._description.split(" ")
+        self.message = ""
         for tag in tags.copy():
             self._validate_not_date(tag)
             if tag.startswith("+"):

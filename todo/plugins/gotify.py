@@ -23,4 +23,5 @@ class Gotify(BaseNotify):
     def __call__(self, todo: TodoItem, todotxt: TodoTxt, _=lambda x, _: x):
         self._client.create_message(
             todo.message,
+            title="消息提醒",
         )
