@@ -56,7 +56,7 @@ class TodoTxt:
                 completed=False,
                 priority=todo.priority,
                 creation_date=datetime.now(),
-                description=description,
+                _description=description,
                 recurrence=todo.recurrence,
                 due=due,
             )

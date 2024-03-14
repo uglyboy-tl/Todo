@@ -11,7 +11,7 @@ def is_date(date: str) -> bool:
 
 @dataclass
 class TodoItem:
-    description: str
+    _description: str
     completed: bool = field(default=False, compare=False)
     priority: Optional[Literal["A", "B", "C", "D", "E"]] = field(default=None, compare=False)
     completion_date: Optional[datetime] = field(default=None, compare=False)
@@ -20,6 +20,7 @@ class TodoItem:
     due: Optional[datetime] = field(compare=True, default=None)
     project: List[str] = field(init=False, compare=False, default_factory=list)
     context: List[str] = field(init=False, compare=False, default_factory=list)
+    message: str = field(init=False, compare=False, default="")
 
     def __post_init__(self):
         assert (
@@ -34,8 +35,8 @@ class TodoItem:
         self.completion_date = datetime.now().date()
 
     def _validate(self) -> None:
-        self.description = self.description.strip()
-        tags = self.description.split(" ")
+        self._description = self._description.strip()
+        tags = self._description.split(" ")
         for tag in tags.copy():
             self._validate_not_date(tag)
             if tag.startswith("+"):
@@ -59,10 +60,11 @@ class TodoItem:
                 else:
                     raise ValueError("Invalid due date")
                 continue
+            self.message += tag + " "
         if len(tags) == 0:
             raise ValueError("No description")
-        self.description = " ".join(tags)
-        if self.description == "":
+        self._description = " ".join(tags)
+        if self._description == "":
             raise ValueError("No description")
 
     @staticmethod
@@ -126,6 +128,21 @@ class TodoItem:
             strings.append(f"due:{self.due.strftime('%Y-%m-%d')}")
         return " ".join(strings)
 
+    @property
+    def description(self) -> str:
+        return self._description
+
+    @description.setter
+    def description(self, value: str) -> None:
+        self._description = value
+        self._validate()
+
+    def add_project(self, project: str) -> None:
+        self.description += f" +{project}"
+
+    def add_context(self, context: str) -> None:
+        self.description += f" @{context}"
+
     @classmethod
     def from_string(cls, todo: str) -> "TodoItem":
         todo = todo.strip().split(" ")
@@ -162,5 +179,5 @@ class TodoItem:
             priority=priority,
             completion_date=completion_date,
             creation_date=creation_date,
-            description=description,
+            _description=description,
         )

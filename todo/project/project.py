@@ -49,8 +49,7 @@ class Project:
 
     def format(self, todo: TodoItem):
         if self.name not in todo.project:
-            todo.description += f" +{self.name}"
-            todo._validate()
+            todo.add_project(self.name)
         return todo
 
     @classmethod
