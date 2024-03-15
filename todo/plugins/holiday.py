@@ -28,12 +28,12 @@ class Holiday(BaseContext):
                 content = response.read().decode("utf-8")
                 data = json.loads(content)
                 logger.trace(f"请求成功: {data}")
-            response = data["holiday"]
             if self.check == "workday":
-                return response is None
+                return data["type"]["type"] in [0, 3]
             elif self.check == "holiday":
-                return response is not None
+                return data["type"]["type"] in [1, 2]
             else:
+                response = data["holiday"]
                 return response is not None and response["name"] == self.check
         except error.URLError as e:
             logger.error(f"URL错误: {e.reason}")
