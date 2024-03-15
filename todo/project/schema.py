@@ -51,8 +51,17 @@ class Config(BaseModel):
     context_configs: List[Dict[str, Any]] = []
 
     @classmethod
-    def load(cls, file_path: str):
+    def load(cls, file_path: str, name: str = ""):
         with open(file_path) as f:
-            obj = yaml.load(f, Loader=yaml.FullLoader)
+            y = yaml.load_all(f, Loader=yaml.FullLoader)
+            num = 0
+            for data in y:
+                num += 1
+                if data["name"] == name:
+                    obj = data
+                    break
+            if not name and num == 1:
+                obj = data
+            assert obj, f'Can\'t find config "{name}" in {file_path}'
             logger.debug(f"Loading config from {file_path}: {obj}")
             return cls.model_validate(obj)
