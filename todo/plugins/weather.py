@@ -6,7 +6,7 @@ from urllib import error, parse, request
 from loguru import logger
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext
+from todo.project import BaseContext, Option
 
 WEATHER_URL = "https://{}wttr.in/{}?format=j1"
 
@@ -28,7 +28,7 @@ class Weather(BaseContext):
 
             notify = TodoItem(weather)
             notify.add_context("notify")
-            format(notify, 1)
+            format(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
             todotxt.done(todo)
         except error.URLError as e:
             logger.error(f"URL错误: {e.reason}")

@@ -15,7 +15,7 @@ class TestContext1(BaseContext):
     name: str = "alert"
 
     def __call__(self, todo, todotxt: TodoTxt, format=lambda x, _: x):
-        format(TodoItem("Test New todo"), 1)
+        format(TodoItem("Test New todo"), 7)
         todotxt.done(todo)
 
 

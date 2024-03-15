@@ -1,26 +1,13 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Type
+from typing import List, Type, Union
 
-import yaml
 from loguru import logger
-from pydantic import BaseModel
 from stevedore import ExtensionManager
 
 from todo.core import TodoItem, TodoTxt
 
 from .context import BaseContext
-
-
-class Config(BaseModel):
-    name: str = ""
-    context_configs: List[Dict[str, Any]] = []
-
-    @classmethod
-    def load(cls, file_path: str):
-        with open(file_path) as f:
-            obj = yaml.load(f, Loader=yaml.FullLoader)
-            logger.debug(f"Loading config from {file_path}: {obj}")
-            return cls.model_validate(obj)
+from .schema import Config, Option, Parameter
 
 
 @dataclass
@@ -32,11 +19,16 @@ class Project:
     def __call__(self, todotxt: TodoTxt):
         todolist = todotxt[self.name].alert().sort().todo_list
 
-        def format(todo: TodoItem, type=0):
-            if type == 1:
+        def format(todo: TodoItem, type: Union[Parameter, int] = 1):
+            if isinstance(type, int):
+                type = Parameter(type)
+            if type == Option.FORMAT:
+                todo = self.format(todo)
+            if type == Option.ADD:
                 todotxt.append(self.format(todo))
+            if type == Option.EXECUTE:
                 todolist.append(todo)
-            return self.format(todo)
+            return todo
 
         index = 0
         while index < len(todolist):
