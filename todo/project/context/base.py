@@ -28,3 +28,6 @@ class BaseContext(metaclass=ABCMeta):
     @abstractmethod
     def __call__(self, todo: TodoItem, process: Callable[[TodoItem, int], TodoItem] = lambda x: x):
         pass
+
+    def modify_all(self, todo: TodoItem, todotxt, process: Callable[[TodoItem, int], TodoItem] = lambda x: x):
+        return

@@ -32,9 +32,11 @@ class Project:
             if type == Option.EXECUTE:
                 todolist.append(todo)
             if type == Option.BREAK:
-                todo.context.append("break")
+                todo.context.append("#break")
             if type == Option.DONE:
                 todotxt.done(todo)
+            if type == Option.MODIFY_ALL:
+                todo.context.append("#modify_all")
             return todo
 
         index = 0
@@ -44,13 +46,18 @@ class Project:
             for script in self.scripts:
                 if script.match(todo.context):
                     script(todo, process)
-                    if "break" in todo.context:
-                        todo.context.remove("break")
+                    if "#break" in todo.context:
+                        logger.debug(f"Skipping: {todo}")
+                        todo.context.remove("#break")
                         break
+                    if "#modify_all" in todo.context:
+                        logger.debug(f"Modifying all: {todo}")
+                        todo.context.remove("#modify_all")
+                        script.modify_all(todo, todotxt, process)
             index += 1
 
     def _format(self, todo: TodoItem):
-        if self.name not in todo.project:
+        if self.name not in todo.project and self.name != "SYSTEM":
             todo.add_project(self.name)
         return todo
 
