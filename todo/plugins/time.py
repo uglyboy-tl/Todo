@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
-from loguru import logger
-
 from todo.core import TodoItem
 from todo.project import BaseContext, Option
 
@@ -13,9 +11,7 @@ class Time(BaseContext):
     regex: str
 
     def __call__(self, todo: TodoItem, process):
-        logger.debug(f"Checking: {todo}")
         if not self._check(todo.context):
-            logger.debug(f"Skipping: {todo}")
             process(todo, Option.BREAK)
 
     def _check(self, contexts: List[str]):
