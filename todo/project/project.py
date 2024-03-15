@@ -47,11 +47,11 @@ class Project:
                 if script.match(todo.context):
                     script(todo, process)
                     if "#break" in todo.context:
-                        logger.debug(f"Skipping: {todo}")
+                        logger.trace(f"Skipping: {todo}")
                         todo.context.remove("#break")
                         break
                     if "#modify_all" in todo.context:
-                        logger.debug(f"Modifying all: {todo}")
+                        logger.trace(f"Modifying all: {todo}")
                         todo.context.remove("#modify_all")
                         script.modify_all(todo, todotxt, process)
             index += 1
@@ -66,6 +66,7 @@ class Project:
         config: Config = Config.load(file_path)
         context_plugins: List[[Type[BaseContext]]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
         context_type_set = {context.name for context in context_plugins}
+        logger.trace(f"Contexts: {context_type_set}")
 
         scripts = []
         for context in config.context_configs:
