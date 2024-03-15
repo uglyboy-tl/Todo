@@ -17,7 +17,10 @@ class Project:
     config: Config = field(default_factory=Config)
 
     def __call__(self, todotxt: TodoTxt):
-        todolist = todotxt[self.name].alert().sort().todo_list
+        if self.name == "SYSTEM":
+            todolist = todotxt.alert().sort().todo_list
+        else:
+            todolist = todotxt[self.name].alert().sort().todo_list
 
         def format(todo: TodoItem, type: Union[Parameter, int] = 1):
             if isinstance(type, int):
