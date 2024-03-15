@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from gotify import Gotify as Notify
 
 from todo.core import TodoItem
-from todo.project import BaseNotify, Option
+from todo.project import BaseNotify
 from todo.utils import config
 
 
@@ -25,5 +25,3 @@ class Gotify(BaseNotify):
             todo.message,
             title="消息提醒",
         )
-        if len(todo.context) == 1 and todo.context[0] == self.name:
-            process(todo, Option.DONE)

@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from email.mime.text import MIMEText
 
 from todo.core import TodoItem
-from todo.project import BaseNotify, Option
+from todo.project import BaseNotify
 from todo.utils import config
 
 
@@ -37,5 +37,3 @@ class Email(BaseNotify):
         self._smtp.login(self.email, self.password)
         self._smtp.sendmail(self.email, self.id, msg.as_string())
         self._smtp.quit()
-        if len(todo.context) == 1 and todo.context[0] == self.name:
-            process(todo, Option.DONE)

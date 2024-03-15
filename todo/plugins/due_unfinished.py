@@ -15,4 +15,3 @@ class DueUnfinished(BaseContext):
         for todo in todotxt:
             if not todo.completed and todo.due and todo.due.date() < datetime.now().date():
                 process(todo, Option.EXECUTE)
-        process(todo, Option.DONE)

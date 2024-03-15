@@ -12,4 +12,3 @@ class Archive(BaseContext):
 
     def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
         todotxt.archive()
-        process(todo, Option.DONE)
