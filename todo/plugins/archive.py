@@ -11,5 +11,5 @@ class Archive(BaseContext):
             process(todo, Option.MODIFY_ALL)
 
     def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
-        process(todo, Option.DONE)
         todotxt.archive()
+        process(todo, Option.DONE)
