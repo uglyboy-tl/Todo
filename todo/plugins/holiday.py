@@ -5,7 +5,7 @@ from urllib import error, request
 
 from loguru import logger
 
-from todo.core import TodoItem, TodoTxt
+from todo.core import TodoItem
 from todo.project import BaseContext, Option
 
 HOLIDAY_URL = "https://timor.tech/api/holiday/info/{}"
@@ -16,10 +16,10 @@ HEADERS = {"User-Agent": "Mozilla/5.0 3578.98 Safari/537.36"}
 class Holiday(BaseContext):
     check: str = "workday"
 
-    def __call__(self, todo: TodoItem, todotxt: TodoTxt, format=lambda x, _: x):
+    def __call__(self, todo: TodoItem, process):
         if not self._check(todo.due):
             todo.due += timedelta(days=1)
-            format(todo, Option.BREAK)
+            process(todo, Option.BREAK)
 
     def _check(self, time: datetime):
         try:

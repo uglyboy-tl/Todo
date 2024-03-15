@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 
 from gotify import Gotify as Notify
 
-from todo.core import TodoItem, TodoTxt
-from todo.project import BaseNotify
+from todo.core import TodoItem
+from todo.project import BaseNotify, Option
 from todo.utils import config
 
 
@@ -20,10 +20,10 @@ class Gotify(BaseNotify):
     def _validate(id: str):
         pass
 
-    def __call__(self, todo: TodoItem, todotxt: TodoTxt, _=lambda x, _: x):
+    def __call__(self, todo: TodoItem, process):
         self._client.create_message(
             todo.message,
             title="消息提醒",
         )
         if len(todo.context) == 1 and todo.context[0] == self.name:
-            todotxt.done(todo)
+            process(todo, Option.DONE)

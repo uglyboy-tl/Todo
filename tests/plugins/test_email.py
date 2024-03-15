@@ -31,7 +31,7 @@ def test_email_notification():
         patch.object(smtplib.SMTP_SSL, "sendmail") as mock_sendmail,
         patch.object(smtplib.SMTP_SSL, "quit") as mock_quit,
     ):
-        email(todo, todotxt)
+        email(todo, todotxt, lambda x, _: x)
 
         msg = MIMEText(f"{str(todo)}", "plain", "utf-8")
         msg["Subject"] = "[代办提醒]" + todo.message

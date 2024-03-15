@@ -4,8 +4,7 @@ from dataclasses import dataclass
 import yaml
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, Project
-from todo.project.project import Config
+from todo.project import BaseContext, Config, Option, Project
 
 TODAY = time.strftime("%Y-%m-%d")
 
@@ -14,16 +13,16 @@ TODAY = time.strftime("%Y-%m-%d")
 class TestContext1(BaseContext):
     name: str = "alert"
 
-    def __call__(self, todo, todotxt: TodoTxt, format=lambda x, _: x):
-        format(TodoItem("Test New todo"), 7)
-        todotxt.done(todo)
+    def __call__(self, todo, process=lambda x, _: x):
+        process(TodoItem("Test New todo"), Option.FORMAT | Option.ADD | Option.EXECUTE)
+        process(todo, Option.DONE)
 
 
 @dataclass
 class TestContext2(BaseContext):
     name: str = "alert"
 
-    def __call__(self, todo, _, __):
+    def __call__(self, todo, _):
         todo.description = "Modified"
 
 
@@ -178,11 +177,11 @@ def test_project_load_contexts():
 
     todo_item = TodoItem(f"Test todo @alert +example due:{TODAY}")
     todo_txt.append(todo_item)
-    reminder(todo_item, todo_txt)
+    reminder(todo_item, process=lambda x, _: x)
     assert len(todo_txt) == 1
-    assert todo_item.completed is True
+    assert todo_item.completed is False
     # assert todo_txt[0].description == "Test New todo"
 
     todo_item = TodoItem(f"Test todo @alert +example due:{TODAY}")
-    alert(todo_item, todo_txt, lambda x, _: x)
+    alert(todo_item, lambda x, _: x)
     assert todo_item.description == "Modified"

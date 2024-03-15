@@ -5,7 +5,7 @@ from urllib import error, parse, request
 
 from loguru import logger
 
-from todo.core import TodoItem, TodoTxt
+from todo.core import TodoItem
 from todo.project import BaseContext, Option
 
 WEATHER_URL = "https://{}wttr.in/{}?format=j1"
@@ -16,7 +16,7 @@ class Weather(BaseContext):
     language: str = "zh"
     location: Optional[str] = None
 
-    def __call__(self, todo: TodoItem, todotxt: TodoTxt, format=lambda x, _: x):
+    def __call__(self, todo: TodoItem, process):
         subdomain: str = f"{self.language}." if self.language != "en" else ""
         location: str = self.location or ""
         try:
@@ -28,8 +28,8 @@ class Weather(BaseContext):
 
             notify = TodoItem(weather)
             notify.add_context("notify")
-            format(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
-            todotxt.done(todo)
+            process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
+            process(todo, Option.DONE)
         except error.URLError as e:
             logger.error(f"URL错误: {e.reason}")
         except Exception as e:

@@ -22,7 +22,7 @@ class Project:
         else:
             todolist = todotxt[self.name].alert().sort().todo_list
 
-        def format(todo: TodoItem, type: Union[Parameter, int] = 1):
+        def process(todo: TodoItem, type: Union[Parameter, int] = 1):
             if isinstance(type, int):
                 type = Parameter(type)
             if type == Option.FORMAT:
@@ -33,6 +33,8 @@ class Project:
                 todolist.append(todo)
             if type == Option.BREAK:
                 todo.context.append("break")
+            if type == Option.DONE:
+                todotxt.done(todo)
             return todo
 
         index = 0
@@ -41,7 +43,7 @@ class Project:
             logger.trace(f"Processing: {todo}")
             for context in self.contexts:
                 if context.name in todo.context:
-                    context(todo, todotxt, format)
+                    context(todo, process)
                     if "break" in todo.context:
                         todo.context.remove("break")
                         break

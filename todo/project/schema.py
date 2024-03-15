@@ -11,6 +11,7 @@ class Option(Enum):
     ADD = 1  # 第1位
     EXECUTE = 2  # 第2位
     BREAK = 3  # 第3位
+    DONE = 4  # 第4位
     # 根据需要添加更多选项
 
     def __or__(self, other: Union["Option", int]) -> int:
