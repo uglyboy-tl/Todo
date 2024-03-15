@@ -28,15 +28,20 @@ class Project:
                 todotxt.append(self.format(todo))
             if type == Option.EXECUTE:
                 todolist.append(todo)
+            if type == Option.BREAK:
+                todo.context.append("break")
             return todo
 
         index = 0
         while index < len(todolist):
             todo = todolist[index]
-            logger.debug(f"Processing: {todo}")
+            logger.trace(f"Processing: {todo}")
             for context in self.contexts:
                 if context.name in todo.context:
                     context(todo, todotxt, format)
+                    if "break" in todo.context:
+                        todo.context.remove("break")
+                        break
             index += 1
 
     def format(self, todo: TodoItem):

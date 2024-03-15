@@ -10,6 +10,7 @@ class Option(Enum):
     FORMAT = 0  # 第0位
     ADD = 1  # 第1位
     EXECUTE = 2  # 第2位
+    BREAK = 3  # 第3位
     # 根据需要添加更多选项
 
     def __or__(self, other: Union["Option", int]) -> int:
@@ -63,5 +64,5 @@ class Config(BaseModel):
             if not name and num == 1:
                 obj = data
             assert obj, f'Can\'t find config "{name}" in {file_path}'
-            logger.debug(f"Loading config from {file_path}: {obj}")
+            logger.trace(f"Loading config from {file_path}: {obj}")
             return cls.model_validate(obj)
