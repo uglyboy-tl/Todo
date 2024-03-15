@@ -8,7 +8,7 @@ from todo.project import BaseContext, Option
 
 @dataclass
 class Time(BaseContext):
-    regex: str
+    regex: str = r"^\d{2}:\d{2}-\d{2}:\d{2}$"
 
     def __call__(self, todo: TodoItem, process):
         if not self._check(todo.context):
@@ -18,6 +18,8 @@ class Time(BaseContext):
         for context in contexts:
             if self.pattern.match(context):
                 time_period = context
+        if not time_period:
+            return False
         # 解析时间段以获取开始时间和结束时间
         start_time_str, end_time_str = time_period.split("-")
         start_time = datetime.strptime(start_time_str, "%H:%M").time()
