@@ -14,7 +14,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 3578.98 Safari/537.36"}
 
 @dataclass
 class Holiday(BaseContext):
-    check: str = "workday"
+    check: str = "holiday"
 
     def __call__(self, todo: TodoItem, process):
         if not self._check(todo.due):
