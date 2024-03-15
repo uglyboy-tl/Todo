@@ -20,19 +20,19 @@ pytest = "^8.0.2"
 pytest-mock = "^3.12.0"
 
 [tool.poetry.plugins."todo.project"]
-done = "todo.plugins.done:Done"
-update = "todo.plugins.update:Update"
-time = "todo.plugins.time:Time"
-holiday = "todo.plugins.holiday:Holiday"
-weather = "todo.plugins.weather:Weather"
-gotify = "todo.plugins.gotify:Gotify"
-email = "todo.plugins.email:Email"
+done = "todo.plugins:Done"
+update = "todo.plugins:Update"
+time = "todo.plugins:Time"
+holiday = "todo.plugins:Holiday"
+weather = "todo.plugins:Weather"
+gotify = "todo.plugins:Gotify"
+email = "todo.plugins:Email"
 test1 = "tests.project.test_project:TestContext1"
 test2 = "tests.project.test_project:TestContext2"
 
 [tool.poetry.plugins."todo.project.SYSTEM"]
-archive = "todo.plugins.archive:Archive"
-unfinished = "todo.plugins.due_unfinished:DueUnfinished"
+archive = "todo.plugins:Archive"
+unfinished = "todo.plugins:DueUnfinished"
 
 [build-system]
 requires = ["poetry-core"]
