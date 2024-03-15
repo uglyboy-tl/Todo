@@ -57,7 +57,7 @@ class TodoTxt:
             new_todo = TodoItem(
                 completed=False,
                 priority=todo.priority,
-                creation_date=todo.creation_date,
+                creation_date=todo.creation_date if todo.creation_date else datetime.now(),
                 _description=description,
                 recurrence=todo.recurrence,
                 due=due,
