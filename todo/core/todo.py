@@ -38,12 +38,14 @@ class TodoItem:
         self._description = self._description.strip()
         tags = self._description.split(" ")
         self.message = ""
+        self.context = []
+        self.project = []
         for tag in tags.copy():
             self._validate_not_date(tag)
-            if tag.startswith("+"):
+            if tag.startswith("+") and len(tag) > 1:
                 self.project.append(tag[1:])
                 continue
-            if tag.startswith("@"):
+            if tag.startswith("@") and len(tag) > 1:
                 self.context.append(tag[1:])
                 continue
             if tag.startswith("rec:"):

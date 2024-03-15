@@ -25,3 +25,5 @@ class Gotify(BaseNotify):
             todo.message,
             title="消息提醒",
         )
+        if len(todo.context) == 1 and todo.context[0] == self.name:
+            todotxt.done(todo)
