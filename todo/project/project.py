@@ -26,7 +26,7 @@ class Project:
             if isinstance(type, int):
                 type = Parameter(type)
             if type == Option.FORMAT:
-                todo = self.format(todo)
+                todo = self._format(todo)
             if type == Option.ADD:
                 todotxt.append(todo)
             if type == Option.EXECUTE:
@@ -42,14 +42,14 @@ class Project:
             todo = todolist[index]
             logger.trace(f"Processing: {todo}")
             for script in self.scripts:
-                if script.name in todo.context:
+                if script.match(todo.context):
                     script(todo, process)
                     if "break" in todo.context:
                         todo.context.remove("break")
                         break
             index += 1
 
-    def format(self, todo: TodoItem):
+    def _format(self, todo: TodoItem):
         if self.name not in todo.project:
             todo.add_project(self.name)
         return todo
