@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 from stevedore import ExtensionManager
 
-from todo.core import TodoItem, TodoTxt
-from todo.plugins.email import Email
+from todo.core import TodoItem
+from todo.plugins import Email
 from todo.project import BaseContext
 
 
