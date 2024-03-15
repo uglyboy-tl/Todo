@@ -40,6 +40,8 @@ class TodoTxt:
             todo = self.todo_list[todo]
         elif isinstance(todo, TodoItem):
             assert todo in self
+        if todo.completed:
+            return
         todo.done()
         if todo.recurrence:
             description = todo.description
