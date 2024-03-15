@@ -76,6 +76,9 @@ class Project:
 
         scripts = []
         for context in config.context_configs:
+            assert "name" in context.keys()
+            if "type" not in context.keys():
+                context["type"] = context["name"]
             if context["type"] in context_type_set:
                 context = context_plugins[context.pop("type")].plugin(**context)
             elif context["type"] in context_private_type_set:

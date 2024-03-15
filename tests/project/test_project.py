@@ -130,7 +130,7 @@ def project_init(file_path: str):
         "name": "example",
         "context_configs": [
             {"name": "addone", "type": "test1"},
-            {"type": "test2"},
+            {"name": "test2"},
             {"name": "addone", "type": "notest"},
         ],
     }
@@ -147,7 +147,7 @@ def test_project_load():
 
     # Call
     todo_txt1 = TodoTxt()
-    todo_item = TodoItem(f"Test todo @alert +example due:{TODAY}")
+    todo_item = TodoItem(f"Test todo @test2 +example due:{TODAY}")
     todo_txt1.append(todo_item)
     project(todo_txt1)
     assert todo_item.description == "Modified"
@@ -172,7 +172,7 @@ def test_project_load_contexts():
     alert = project.scripts[1]
 
     assert reminder.name == "addone"
-    assert alert.name == "alert"
+    assert alert.name == "test2"
     # assert isinstance(reminder, TestContext)
 
     todo_item = TodoItem(f"Test todo @alert +example due:{TODAY}")
