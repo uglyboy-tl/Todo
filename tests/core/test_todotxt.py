@@ -106,7 +106,7 @@ def test_achieve_with_default_done_file():
     todo_item2 = TodoItem("Test todo 2", True, "B")
     todo_txt.append(todo_item1)
     todo_txt.append(todo_item2)
-    todo_txt.achieve()
+    todo_txt.archive()
     assert len(todo_txt) == 1
     assert todo_item1 in todo_txt
     assert todo_item2 not in todo_txt
@@ -119,7 +119,7 @@ def test_achieve_with_custom_done_file():
     todo_txt.append(todo_item1)
     todo_txt.append(todo_item2)
     done_file = "data/test/done.txt"
-    todo_txt.achieve(done_file)
+    todo_txt.archive(done_file)
     assert len(todo_txt) == 1
     assert todo_item1 in todo_txt
     assert todo_item2 not in todo_txt
@@ -128,5 +128,5 @@ def test_achieve_with_custom_done_file():
 
 def test_achieve_with_empty_todo_list():
     todo_txt = TodoTxt(todo_list=[])
-    todo_txt.achieve()
+    todo_txt.archive()
     assert len(todo_txt) == 0

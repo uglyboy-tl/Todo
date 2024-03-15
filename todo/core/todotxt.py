@@ -64,7 +64,7 @@ class TodoTxt:
             )
             self.todo_list.append(new_todo)
 
-    def achieve(self, done_file: Optional[str] = None):
+    def archive(self, done_file: Optional[str] = None):
         if self.read_only:
             return
         if done_file is None:
