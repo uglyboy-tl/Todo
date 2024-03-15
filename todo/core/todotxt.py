@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from shutil import copy2
-from typing import List, Literal, Optional, Union, overload
+from typing import List, Optional, Union, overload
 
 from dateutil.relativedelta import relativedelta
 
@@ -77,7 +77,6 @@ class TodoTxt:
                 if todo.completed:
                     file.write(str(todo) + "\n")
         self.todo_list = [todo for todo in self.todo_list if not todo.completed]
-        self._save()
 
     def sort(self) -> "TodoTxt":
         self.todo_list = sorted(
@@ -154,8 +153,5 @@ class TodoTxt:
         self._save()
 
 
-def open_todotxt(file_path: str, option: Literal["r", "w"] = "w") -> TodoTxt:
-    if option == "r":
-        return TodoTxt(file_path=file_path, read_only=True)
-    elif option == "w":
-        return TodoTxt(file_path=file_path, read_only=False)
+def open_todotxt(file_path: str) -> TodoTxt:
+    return TodoTxt(file_path=file_path, read_only=False)
