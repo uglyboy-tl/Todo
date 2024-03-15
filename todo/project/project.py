@@ -64,15 +64,24 @@ class Project:
     @classmethod
     def load(cls, file_path: str):
         config: Config = Config.load(file_path)
-        context_plugins: List[[Type[BaseContext]]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
+        context_plugins: List[Type[BaseContext]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
+        context_private_plugins: List[Type[BaseContext]] = ExtensionManager(
+            namespace=f"todo.project.{config.name}", invoke_on_load=False
+        )
+
+        # context_plugins.extend(list(ExtensionManager(namespace=f"todo.project.{config.name}", invoke_on_load=False)))
         context_type_set = {context.name for context in context_plugins}
+        context_private_type_set = {context.name for context in context_private_plugins}
         logger.trace(f"Contexts: {context_type_set}")
 
         scripts = []
         for context in config.context_configs:
-            if context["type"] not in context_type_set:
+            if context["type"] in context_type_set:
+                context = context_plugins[context.pop("type")].plugin(**context)
+            elif context["type"] in context_private_type_set:
+                context = context_private_plugins[context.pop("type")].plugin(**context)
+            else:
                 logger.warning(f"Context `@{context['type']}` not found, skipping")
                 continue
-            context = context_plugins[context.pop("type")].plugin(**context)
             scripts.append(context)
         return cls(config.name, scripts, config)
