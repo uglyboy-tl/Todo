@@ -13,7 +13,7 @@ from .schema import Config, Option, Parameter
 @dataclass
 class Project:
     name: str = ""
-    contexts: List[BaseContext] = field(default_factory=list)
+    scripts: List[BaseContext] = field(default_factory=list)
     config: Config = field(default_factory=Config)
 
     def __call__(self, todotxt: TodoTxt):
@@ -22,13 +22,13 @@ class Project:
         else:
             todolist = todotxt[self.name].alert().sort().todo_list
 
-        def process(todo: TodoItem, type: Union[Parameter, int] = 1):
+        def process(todo: TodoItem, type: Union[Parameter, int] = 1) -> TodoItem:
             if isinstance(type, int):
                 type = Parameter(type)
             if type == Option.FORMAT:
                 todo = self.format(todo)
             if type == Option.ADD:
-                todotxt.append(self.format(todo))
+                todotxt.append(todo)
             if type == Option.EXECUTE:
                 todolist.append(todo)
             if type == Option.BREAK:
@@ -41,9 +41,9 @@ class Project:
         while index < len(todolist):
             todo = todolist[index]
             logger.trace(f"Processing: {todo}")
-            for context in self.contexts:
-                if context.name in todo.context:
-                    context(todo, process)
+            for script in self.scripts:
+                if script.name in todo.context:
+                    script(todo, process)
                     if "break" in todo.context:
                         todo.context.remove("break")
                         break
@@ -60,11 +60,11 @@ class Project:
         context_plugins: List[[Type[BaseContext]]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
         context_type_set = {context.name for context in context_plugins}
 
-        contexts = []
+        scripts = []
         for context in config.context_configs:
             if context["type"] not in context_type_set:
                 logger.warning(f"Context `@{context['type']}` not found, skipping")
                 continue
             context = context_plugins[context.pop("type")].plugin(**context)
-            contexts.append(context)
-        return cls(config.name, contexts, config)
+            scripts.append(context)
+        return cls(config.name, scripts, config)

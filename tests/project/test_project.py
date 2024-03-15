@@ -37,7 +37,7 @@ def test_call_with_alerts_and_contexts():
 
     assert len(todo_txt["project1"].alert()) == 2
 
-    project.contexts = [TestContext2()]
+    project.scripts = [TestContext2()]
 
     # Call
     project(todo_txt)
@@ -54,7 +54,7 @@ def test_call_with_no_alerts():
     todo_txt.append(todo_item)
     assert len(todo_txt["project1"].alert()) == 1
     project = Project("project1")
-    project.contexts = [TestContext2()]
+    project.scripts = [TestContext2()]
 
     # Call
     project(todo_txt)
@@ -70,7 +70,7 @@ def test_call_with_no_contexts():
     todo_txt.append(todo_item)
     assert len(todo_txt["project1"].alert()) == 1
     project = Project("project1")
-    project.contexts = []
+    project.scripts = []
 
     # Call
     project(todo_txt)
@@ -143,7 +143,7 @@ def test_project_load():
     file_path = "data/project/test.yaml"
     project_init(file_path)
     project = Project.load(file_path)
-    assert len(project.contexts) == 2
+    assert len(project.scripts) == 2
 
     # Call
     todo_txt1 = TodoTxt()
@@ -167,9 +167,9 @@ def test_project_load_contexts():
     project_init(file_path)
     todo_txt = TodoTxt(todo_list=[])
     project = Project.load(file_path)
-    assert len(project.contexts) == 2
-    reminder = project.contexts[0]
-    alert = project.contexts[1]
+    assert len(project.scripts) == 2
+    reminder = project.scripts[0]
+    alert = project.scripts[1]
 
     assert reminder.name == "addone"
     assert alert.name == "alert"

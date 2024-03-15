@@ -24,14 +24,13 @@ def test_load_as_extensions():
 def test_email_notification():
     email = Email("alert", "uglyboy@uglyboy.cn")
     todo = TodoItem("Test Todo")
-    todotxt = TodoTxt()
 
     with (
         patch.object(smtplib.SMTP_SSL, "login") as mock_login,
         patch.object(smtplib.SMTP_SSL, "sendmail") as mock_sendmail,
         patch.object(smtplib.SMTP_SSL, "quit") as mock_quit,
     ):
-        email(todo, todotxt, lambda x, _: x)
+        email(todo, lambda x, _: x)
 
         msg = MIMEText(f"{str(todo)}", "plain", "utf-8")
         msg["Subject"] = "[代办提醒]" + todo.message
