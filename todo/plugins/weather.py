@@ -26,7 +26,7 @@ class Weather(BaseContext):
             weather = f"今日天气: {data['current_condition'][0]['lang_zh'][0]['value']}。"
             weather += f"气温：{data['weather'][0]['mintempC']}°C-{data['weather'][0]['maxtempC']}°C，现在温度：{data['current_condition'][0]['temp_C']}°C，风力：{data['current_condition'][0]['windspeedKmph']}km/h\n"
 
-            notify = TodoItem(f"{weather.strip()} @notify @done")
+            notify = TodoItem(f"{weather.strip()} @#weather @notify @done")
             process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
         except error.URLError as e:
             logger.error(f"URL错误: {e.reason}")
