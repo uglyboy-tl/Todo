@@ -186,5 +186,5 @@ class TodoTxt:
         return self._dict
 
 
-def open_todotxt(file_path: str) -> TodoTxt:
+def open_todotxt(file_path: str = "data/todo.txt") -> TodoTxt:
     return TodoTxt(file_path=file_path, read_only=False)
