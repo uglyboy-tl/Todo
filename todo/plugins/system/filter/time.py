@@ -15,6 +15,7 @@ class TimeFilter(BaseFilter):
             process(todo, Option.BREAK)
 
     def _check(self, contexts: List[str]):
+        time_period = None
         for context in contexts:
             if self.pattern.match(context):
                 time_period = context

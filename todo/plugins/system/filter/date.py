@@ -22,6 +22,7 @@ class DateFilter(BaseFilter):
             process(todo, Option.BREAK)
 
     def _check(self, time: datetime, contexts: list[str]):
+        date_filter = None
         for context in contexts:
             if self.pattern.match(context):
                 date_filter = context

@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
@@ -10,16 +11,19 @@ from todo.project import BaseFilter, Option
 
 @dataclass
 class WeatherFilter(BaseFilter):
-    regex: str = r"^\d{5}$"
+    regex: str = r"^晴天|阴天$"
 
     def __call__(self, todo: TodoItem, process):
-        if self.name in todo.context:
-            process(todo, Option.MODIFY_ALL)
+        process(todo, Option.MODIFY_ALL)
 
     def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
         weather = self._get_weather(todotxt)
+        weather_filter = None
+        for context in todo.context:
+            if self.pattern.match(context):
+                weather_filter = context
         if weather is not None:
-            if not self._check(weather):
+            if not weather_filter or not self._check(weather, weather_filter):
                 process(todo, Option.BREAK)
         else:
             if self._no_weather_todo(todotxt):
@@ -41,7 +45,11 @@ class WeatherFilter(BaseFilter):
                 return False
         return True
 
-    def _check(self, weather: TodoItem):
+    def _check(self, todo: TodoItem, weather_filter: str):
+        pattern = re.compile(r"^今日天气: (.*)。")
+        weather = pattern.search(todo.description).group(1)
+        if weather_filter == weather:
+            return True
         return False
 
 
