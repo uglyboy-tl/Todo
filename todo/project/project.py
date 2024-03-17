@@ -46,14 +46,14 @@ class Project:
             for script in self.scripts:
                 if script.match(todo.context):
                     script(todo, process)
-                    if "#break" in todo.context:
-                        logger.trace(f"Skipping: {todo}")
-                        todo.context.remove("#break")
-                        break
                     if "#modify_all" in todo.context:
                         logger.trace(f"Modifying all: {todo}")
                         todo.context.remove("#modify_all")
                         script.modify_all(todo, todotxt, process)
+                    if "#break" in todo.context:
+                        logger.trace(f"Skipping: {todo}")
+                        todo.context.remove("#break")
+                        break
             index += 1
 
     def _format(self, todo: TodoItem):
