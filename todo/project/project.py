@@ -6,7 +6,7 @@ from stevedore import ExtensionManager
 
 from todo.core import TodoItem, TodoTxt
 
-from .context import BaseContext
+from .context import BaseContext, BaseFilter
 from .schema import Config, Option, Parameter
 
 
@@ -87,4 +87,5 @@ class Project:
                 logger.warning(f"Context `@{context['type']}` not found, skipping")
                 continue
             scripts.append(context)
+        scripts.sort(key=lambda x: 1 if isinstance(x, BaseFilter) else 0, reverse=True)
         return cls(config.name, scripts, config)
