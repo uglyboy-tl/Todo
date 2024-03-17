@@ -5,6 +5,8 @@ import yaml
 from loguru import logger
 from pydantic import BaseModel
 
+from todo.core import TodoItem, TodoTxt
+
 
 class Option(Enum):
     FORMAT = 0  # 第0位
@@ -68,3 +70,6 @@ class Config(BaseModel):
             assert obj, f'Can\'t find config "{name}" in {file_path}'
             logger.trace(f"Loading config from {file_path}: {obj}")
             return cls.model_validate(obj)
+
+    def init(self, todotxt: TodoTxt):
+        return

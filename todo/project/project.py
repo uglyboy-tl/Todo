@@ -17,6 +17,7 @@ class Project:
     config: Config = field(default_factory=Config)
 
     def __call__(self, todotxt: TodoTxt):
+        self._init(todotxt)
         if self.name == "SYSTEM":
             todolist = todotxt.alert().sort().todo_list
         else:
@@ -60,6 +61,9 @@ class Project:
         if self.name not in todo.project and self.name != "SYSTEM":
             todo.add_project(self.name)
         return todo
+
+    def _init(self, todotxt: TodoTxt):
+        self.config.init(todotxt)
 
     @classmethod
     def load(cls, file_path: str):
