@@ -22,8 +22,10 @@ class WeatherFilter(BaseFilter):
         for context in todo.context:
             if self.pattern.match(context):
                 weather_filter = context
+        if not weather_filter:
+            return
         if weather is not None:
-            if not weather_filter or not self._check(weather, weather_filter):
+            if not self._check(weather, weather_filter):
                 process(todo, Option.BREAK)
         else:
             if self._no_weather_todo(todotxt):
