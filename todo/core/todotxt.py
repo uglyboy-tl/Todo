@@ -52,7 +52,7 @@ class TodoTxt:
             return
         todo.done()
         for context in todo.context:
-            if context in self.dict and not context.startswith("#"):
+            if context in self.dict and not context.startswith("#") and todo in self.dict[context]:
                 self.dict[context].remove(todo)
         if todo.recurrence:
             description = todo.description
