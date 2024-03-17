@@ -5,11 +5,11 @@ from typing import Optional
 from loguru import logger
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, Option
+from todo.project import BaseFilter, Option
 
 
 @dataclass
-class WeatherFilter(BaseContext):
+class WeatherFilter(BaseFilter):
     regex: str = r"^\d{5}$"
 
     def __call__(self, todo: TodoItem, process):

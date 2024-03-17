@@ -6,14 +6,14 @@ from urllib import error, request
 from loguru import logger
 
 from todo.core import TodoItem
-from todo.project import BaseContext, Option
+from todo.project import BaseFilter, Option
 
 HOLIDAY_URL = "https://timor.tech/api/holiday/info/{}"
 HEADERS = {"User-Agent": "Mozilla/5.0 3578.98 Safari/537.36"}
 
 
 @dataclass
-class HolidayFilter(BaseContext):
+class HolidayFilter(BaseFilter):
     check: str = "holiday"
 
     def __call__(self, todo: TodoItem, process):

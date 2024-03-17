@@ -3,11 +3,11 @@ from datetime import datetime
 from typing import List
 
 from todo.core import TodoItem
-from todo.project import BaseContext, Option
+from todo.project import BaseFilter, Option
 
 
 @dataclass
-class TimeFilter(BaseContext):
+class TimeFilter(BaseFilter):
     regex: str = r"^\d{2}:\d{2}-\d{2}:\d{2}$"
 
     def __call__(self, todo: TodoItem, process):
