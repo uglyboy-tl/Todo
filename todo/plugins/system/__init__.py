@@ -1,8 +1,7 @@
 from .archive import Archive
 from .done import Done
 from .due_unfinished import DueUnfinished
-from .holiday import Holiday
-from .time import Time
+from .filter import HolidayFilter, TimeFilter
 from .update import Update
 
-__all__ = ["Done", "Archive", "Update", "DueUnfinished", "Time", "Holiday"]
+__all__ = ["Done", "Archive", "Update", "DueUnfinished", "TimeFilter", "HolidayFilter"]

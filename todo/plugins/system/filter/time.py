@@ -7,7 +7,7 @@ from todo.project import BaseContext, Option
 
 
 @dataclass
-class Time(BaseContext):
+class TimeFilter(BaseContext):
     regex: str = r"^\d{2}:\d{2}-\d{2}:\d{2}$"
 
     def __call__(self, todo: TodoItem, process):
