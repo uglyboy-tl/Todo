@@ -41,6 +41,8 @@ class TodoItem:
         self.context = []
         self.project = []
         for tag in tags.copy():
+            if not tag:
+                break
             self._validate_not_date(tag)
             if tag.startswith("+") and len(tag) > 1:
                 self.project.append(tag[1:])
@@ -148,7 +150,10 @@ class TodoItem:
 
     @classmethod
     def from_string(cls, todo: str) -> "TodoItem":
-        todo = todo.strip().split(" ")
+        todo = todo.strip()
+        if todo == "":
+            raise ValueError("Empty todo")
+        todo = todo.split(" ")
 
         # Check if the todo is completed
         completed = cls._validate_x(todo[0])

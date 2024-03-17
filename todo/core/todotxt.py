@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from shutil import copy2
-from typing import List, Optional, Union, overload
+from typing import Dict, List, Optional, Union, overload
 
 from dateutil.relativedelta import relativedelta
 
@@ -16,6 +16,7 @@ class TodoTxt:
     read_only: bool = False
     _path: Path = field(init=False, repr=False)
     _init: bool = field(init=False, default=False)
+    _dict: Dict[str, List[TodoItem]] = field(init=False, default_factory=dict)
 
     def __post_init__(self):
         self._path = Path(self.file_path)
@@ -26,6 +27,13 @@ class TodoTxt:
 
     def append(self, todo: TodoItem):
         self.todo_list.append(todo)
+        for context in todo.context:
+            if context not in self.dict:
+                self.dict[context] = []
+            if context.startswith("#"):
+                self.dict[context].append(todo)
+            elif not todo.completed:
+                self.dict[context].append(todo)
 
     @overload
     def done(self, todo: int):
@@ -43,6 +51,9 @@ class TodoTxt:
         if todo.completed:
             return
         todo.done()
+        for context in todo.context:
+            if context in self.dict and not context.startswith("#"):
+                self.dict[context].remove(todo)
         if todo.recurrence:
             description = todo.description
             if todo.recurrence.endswith("d"):
@@ -77,6 +88,8 @@ class TodoTxt:
                 if todo.completed:
                     file.write(str(todo) + "\n")
         self.todo_list = [todo for todo in self.todo_list if not todo.completed]
+        for context in self.dict:
+            self._dict[context] = [todo for todo in self.dict[context] if not todo.completed]
 
     def sort(self) -> "TodoTxt":
         self.todo_list = sorted(
@@ -99,6 +112,9 @@ class TodoTxt:
         todotxt = TodoTxt(todo_list=todo_list, read_only=True)
         return todotxt
 
+    def search(self, keyword: str) -> List[TodoItem]:
+        return self.dict.get(keyword, [])
+
     def _save(self):
         if self.read_only:
             return
@@ -114,7 +130,11 @@ class TodoTxt:
             self._init = True
             self.todo_list = []
         else:
-            self.todo_list = [TodoItem.from_string(todo) for todo in self._path.read_text().split("\n")]
+            data = self._path.read_text().strip()
+            if not data:
+                self.todo_list = []
+                return
+            self.todo_list = [TodoItem.from_string(todo) for todo in data.split("\n")]
 
     def _backup(self):
         backup_path = self._path.with_suffix(self._path.suffix + "." + datetime.now().strftime("%Y%m%d%H%M%S") + ".bak")
@@ -151,6 +171,19 @@ class TodoTxt:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self._save()
+
+    @property
+    def dict(self):
+        if not self._dict:
+            for todo in self.todo_list:
+                for context in todo.context:
+                    if context not in self._dict:
+                        self._dict[context] = []
+                    if context.startswith("#"):
+                        self._dict[context].append(todo)
+                    elif not todo.completed:
+                        self._dict[context].append(todo)
+        return self._dict
 
 
 def open_todotxt(file_path: str) -> TodoTxt:
