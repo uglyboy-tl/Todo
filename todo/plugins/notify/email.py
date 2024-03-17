@@ -23,7 +23,9 @@ class Email(BaseNotify):
 
     @staticmethod
     def _validate(id: str):
-        pattern = re.compile(r"[^@]+@[^@]+\.[^@]+")
+        pattern = re.compile(
+            r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+        )
         if not pattern.match(id):
             raise ValueError("Invalid email address")
 
