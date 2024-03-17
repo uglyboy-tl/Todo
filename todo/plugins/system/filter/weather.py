@@ -41,7 +41,7 @@ class WeatherFilter(BaseFilter):
 
     def _no_weather_todo(self, todotxt: TodoTxt):
         for todo in todotxt.search("weather"):
-            if todo.creation_date.date() == datetime.now().date():
+            if todo.due.date() == datetime.now().date():
                 return False
         return True
 
