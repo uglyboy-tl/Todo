@@ -17,11 +17,11 @@ class DateFilter(BaseFilter):
     regex: str = r"^holiday|workday$"
 
     def __call__(self, todo: TodoItem, process):
-        if not self._check(todo.due, todo.context):
-            todo.due += timedelta(days=1)
+        if not self._check(todo.context):
+            todo.due = datetime.now() + timedelta(days=1)
             process(todo, Option.BREAK)
 
-    def _check(self, time: datetime, contexts: list[str]):
+    def _check(self, contexts: list[str]):
         date_filter = None
         for context in contexts:
             if self.pattern.match(context):
@@ -29,7 +29,7 @@ class DateFilter(BaseFilter):
         if not date_filter:
             return False
         try:
-            url = request.Request(HOLIDAY_URL.format(time.strftime("%Y-%m-%d")), headers=HEADERS)
+            url = request.Request(HOLIDAY_URL.format(datetime.now().strftime("%Y-%m-%d")), headers=HEADERS)
             with request.urlopen(url) as response:
                 content = response.read().decode("utf-8")
                 data = json.loads(content)
