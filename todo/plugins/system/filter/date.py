@@ -13,7 +13,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 3578.98 Safari/537.36"}
 
 
 @dataclass
-class HolidayFilter(BaseFilter):
+class DateFilter(BaseFilter):
     check: str = "holiday"
 
     def __call__(self, todo: TodoItem, process):
