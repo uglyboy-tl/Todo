@@ -8,7 +8,7 @@ from todo.project import BaseFilter, Option
 
 @dataclass
 class TimeFilter(BaseFilter):
-    regex: str = r"^\d{2}:\d{2}-\d{2}:\d{2}$"
+    regex: str = r"^(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$"
 
     def __call__(self, todo: TodoItem, process):
         if not self._check(todo.context):
