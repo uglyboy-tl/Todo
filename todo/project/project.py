@@ -47,7 +47,7 @@ class Project:
         index = 0
         while index < len(todolist):
             todo = todolist[index]
-            logger.debug(f"Processing: {todo}")
+            logger.trace(f"Processing: {todo}")
             if "#break" in todo.context:
                 todo.context.remove("#break")
             if "#all" in todo.context:
@@ -74,8 +74,8 @@ class Project:
         self.config.init(todotxt)
 
     @classmethod
-    def load(cls, file_path: str):
-        config: Config = Config.load(file_path)
+    def load(cls, file_path: str, name: str = ""):
+        config: Config = Config.load(file_path, name)
         context_plugins: List[Type[BaseContext]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
         context_private_plugins: List[Type[BaseContext]] = ExtensionManager(
             namespace=f"todo.project.{config.name}", invoke_on_load=False
