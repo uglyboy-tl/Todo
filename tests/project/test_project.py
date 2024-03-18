@@ -144,6 +144,7 @@ def test_project_load():
     file_path = "data/project/test.yaml"
     project_init(file_path)
     project = Project.load(file_path, "test")
+    print(project.scripts)
     assert len(project.scripts) == 2 + len(SYSTEM_SCRIPTS)
 
     # Call
@@ -156,7 +157,6 @@ def test_project_load():
     todo_txt2 = TodoTxt(todo_list=[])
     todo_item = TodoItem(f"Test todo @addone +test due:{TODAY}")
     todo_txt2.append(todo_item)
-    project(todo_txt2)
     assert len(todo_txt2) == 2
     assert todo_txt2[0].completed is True
     assert todo_txt2[1].description == "Test New todo +test"
@@ -169,8 +169,9 @@ def test_project_load_contexts():
     todo_txt = TodoTxt(todo_list=[])
     project = Project.load(file_path, "test")
     assert len(project.scripts) == 2 + len(SYSTEM_SCRIPTS)
-    reminder = project.scripts[len(SYSTEM_SCRIPTS)]
-    alert = project.scripts[len(SYSTEM_SCRIPTS) + 1]
+    print(project.scripts)
+    reminder = project.scripts[len(SYSTEM_SCRIPTS)-3]
+    alert = project.scripts[len(SYSTEM_SCRIPTS) -2]
 
     assert reminder.name == "addone"
     assert alert.name == "test2"

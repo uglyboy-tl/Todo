@@ -22,6 +22,7 @@ pytest-mock = "^3.12.0"
 [tool.poetry.plugins."todo.project"]
 done = "todo.plugins:Done"
 update = "todo.plugins:Update"
+unfinished = "todo.plugins:DueUnfinished"
 time_filter = "todo.plugins:TimeFilter"
 date_filter = "todo.plugins:DateFilter"
 weather_filter = "todo.plugins:WeatherFilter"
@@ -35,7 +36,6 @@ email = "todo.plugins:Email"
 [tool.poetry.plugins."todo.project.SYSTEM"]
 init = "todo.plugins:Init"
 archive = "todo.plugins:Archive"
-unfinished = "todo.plugins:DueUnfinished"
 shell = "todo.plugins:Shell"
 
 [tool.poetry.plugins."todo.project.test"]

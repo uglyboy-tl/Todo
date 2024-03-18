@@ -12,6 +12,7 @@ from .schema import Config, Option, Parameter
 SYSTEM_SCRIPTS = [
     "done",
     "update",
+    "unfinished",
     "time_filter",
     "date_filter",
     "weather_filter",
@@ -33,10 +34,9 @@ class Project:
 
     def __call__(self, todotxt: TodoTxt):
         self._init(todotxt)
-        if self.name == "SYSTEM":
-            todolist = todotxt.alert().sort().todo_list
-        else:
-            todolist = todotxt[self.name].alert().sort().todo_list
+        todolist = todotxt[self.name].alert().sort()
+        logger.trace(f"TodoList:\n{todolist}")
+        todolist = todolist.todo_list
 
         def process(todo: TodoItem, type: Union[Parameter, int] = 1) -> TodoItem:
             if isinstance(type, int):
@@ -59,6 +59,8 @@ class Project:
                 todotxt.done(todo)
             if type == Option.MODIFY_ALL:
                 todo.context.append("#all")
+            if type == Option.ARCHIVE:
+                todo.context.append("#archive")
             return todo
 
         index = 0
@@ -75,7 +77,11 @@ class Project:
                     if "#all" in todo.context:
                         logger.trace(f"Modifying All: {todo}")
                         todo.context.remove("#all")
-                        script.modify_all(todo, todotxt, process)
+                        script.modify_all(todo, todotxt[self.name], process)
+                    if "#archive" in todo.context:
+                        logger.trace("Archiving TodoTXT")
+                        todo.context.remove("#archive")
+                        todotxt.archive()
                     if "#break" in todo.context:
                         logger.trace(f"Skipping: {todo}")
                         todo.context.remove("#break")
@@ -115,7 +121,10 @@ class Project:
                 logger.warning(f"Context `@{script['type']}` not found, skipping")
                 continue
             scripts.append(script)
-        scripts.sort(key=lambda x: 1 if isinstance(x, BaseFilter) else 0, reverse=True)
+        scripts.sort(
+            key=lambda x: 2 if isinstance(x, BaseFilter) else 1 if x.name not in ["done", "update", "notify"] else 0,
+            reverse=True,
+        )
         logger.trace(f"Project:{config.name}\nScripts: {[script.name for script in scripts]}")
         return cls(config.name, scripts, config)
 

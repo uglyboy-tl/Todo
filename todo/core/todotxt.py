@@ -170,7 +170,13 @@ class TodoTxt:
         if isinstance(index, int):
             return self.todo_list[index]
         elif isinstance(index, str):
-            return TodoTxt(todo_list=[todo for todo in self.todo_list if index in todo.project], read_only=True)
+            if index == "SYSTEM":
+                return TodoTxt(
+                    todo_list=[todo for todo in self.todo_list if not todo.project or "SYSTEM" in todo.project],
+                    read_only=True,
+                )
+            else:
+                return TodoTxt(todo_list=[todo for todo in self.todo_list if index in todo.project], read_only=True)
 
     def __contains__(self, todo: TodoItem):
         return todo in self.todo_list
