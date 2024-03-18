@@ -211,6 +211,10 @@ class TodoTxt:
             self.dict  # noqa: B018
         return self._completed_dict
 
+    @property
+    def output(self):
+        return "\n".join([str(todo) for todo in self.todo_list if "SYSTEM" not in todo.project])
+
 
 def open_todotxt(file_path: str = "data/todo.txt") -> TodoTxt:
     return TodoTxt(file_path=file_path, read_only=False)
