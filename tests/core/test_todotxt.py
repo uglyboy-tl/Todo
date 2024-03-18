@@ -3,9 +3,11 @@ from pathlib import Path
 
 from todo.core import TodoItem, TodoTxt
 
+file_path = "tests/data/todo.txt"
+
 
 def test_append():
-    with TodoTxt() as todo_txt:
+    with TodoTxt(file_path) as todo_txt:
         todo_item = TodoItem("Test todo")
         todo_txt.append(todo_item)
         assert todo_item in todo_txt
@@ -13,7 +15,7 @@ def test_append():
 
 
 def test_done_with_int():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item = TodoItem("Test todo")
         todo_txt.append(todo_item)
         todo_txt.done(0)
@@ -21,7 +23,7 @@ def test_done_with_int():
 
 
 def test_done_with_todo_item():
-    with TodoTxt() as todo_txt:
+    with TodoTxt(file_path) as todo_txt:
         todo_item = TodoItem("Test todo")
         todo_txt.append(todo_item)
         todo_txt.done(todo_item)
@@ -29,7 +31,7 @@ def test_done_with_todo_item():
 
 
 def test_done_with_recurrence():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item = TodoItem("Test todo rec:1d", False, "A")
         todo_txt.append(todo_item)
         todo_txt.done(todo_item)
@@ -41,7 +43,7 @@ def test_done_with_recurrence():
 
 
 def test_done_without_recurrence():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item = TodoItem("Test todo", False, "A")
         todo_txt.append(todo_item)
         todo_txt.done(todo_item)
@@ -50,7 +52,7 @@ def test_done_without_recurrence():
 
 
 def test_done_with_due_date():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item = TodoItem("Test todo rec:1d", False, "A", datetime.now() + timedelta(days=1), datetime.now())
         todo_txt.append(todo_item)
         todo_txt.done(todo_item)
@@ -60,7 +62,7 @@ def test_done_with_due_date():
 
 
 def test_done_with_index():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item = TodoItem("Test todo", False, "A")
         todo_txt.append(todo_item)
         todo_txt.done(0)
@@ -68,7 +70,7 @@ def test_done_with_index():
 
 
 def test_sort():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item1 = TodoItem("Test todo 1", False, "A", datetime.now() + timedelta(days=1))
         todo_item2 = TodoItem(
             "Test todo 2",
@@ -83,7 +85,7 @@ def test_sort():
 
 
 def test_contains():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item = TodoItem(
             "Test todo",
             False,
@@ -94,14 +96,14 @@ def test_contains():
 
 
 def test_str():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item = TodoItem("Test todo", False, "A")
         todo_txt.append(todo_item)
         assert str(todo_txt) == str(todo_item)
 
 
 def test_achieve_with_default_done_file():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item1 = TodoItem("Test todo 1", False, "A")
         todo_item2 = TodoItem("Test todo 2", True, "B")
         todo_txt.append(todo_item1)
@@ -113,7 +115,7 @@ def test_achieve_with_default_done_file():
 
 
 def test_achieve_with_custom_done_file():
-    with TodoTxt(todo_list=[]) as todo_txt:
+    with TodoTxt(file_path, todo_list=[]) as todo_txt:
         todo_item1 = TodoItem("Test todo 1", False, "A")
         todo_item2 = TodoItem("Test todo 2", True, "B")
         todo_txt.append(todo_item1)
@@ -127,6 +129,6 @@ def test_achieve_with_custom_done_file():
 
 
 def test_achieve_with_empty_todo_list():
-    todo_txt = TodoTxt(todo_list=[])
+    todo_txt = TodoTxt(file_path, todo_list=[])
     todo_txt.archive()
     assert len(todo_txt) == 0

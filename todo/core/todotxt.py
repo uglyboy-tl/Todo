@@ -11,7 +11,7 @@ from .todo import TodoItem
 
 @dataclass
 class TodoTxt:
-    file_path: str = "data/test/test.txt"
+    file_path: str = "data/test.txt"
     todo_list: Optional[List[TodoItem]] = None
     read_only: bool = False
     _path: Path = field(init=False, repr=False)
