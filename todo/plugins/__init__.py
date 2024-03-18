@@ -1,5 +1,5 @@
 from .infermation import IMAP
-from .notify import Email, Gotify
+from .notify import Email, Gotify, Notify
 from .system import Archive, DateFilter, Done, DueUnfinished, Init, Shell, TimeFilter, Update, Weather, WeatherFilter
 
 __all__ = [
@@ -10,6 +10,7 @@ __all__ = [
     "DueUnfinished",
     "TimeFilter",
     "DateFilter",
+    "Notify",
     "Email",
     "Gotify",
     "Weather",

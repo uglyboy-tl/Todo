@@ -28,6 +28,7 @@ weather_filter = "todo.plugins:WeatherFilter"
 weather = "todo.plugins:Weather"
 webhook = "todo.plugins:Webhook"
 imap = "todo.plugins:IMAP"
+notify = "todo.plugins:Notify"
 gotify = "todo.plugins:Gotify"
 email = "todo.plugins:Email"
 
