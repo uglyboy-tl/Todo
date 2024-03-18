@@ -26,7 +26,6 @@ time_filter = "todo.plugins:TimeFilter"
 date_filter = "todo.plugins:DateFilter"
 weather_filter = "todo.plugins:WeatherFilter"
 weather = "todo.plugins:Weather"
-shell = "todo.plugins:Shell"
 gotify = "todo.plugins:Gotify"
 email = "todo.plugins:Email"
 test1 = "tests.project.test_project:TestContext1"
@@ -35,6 +34,7 @@ test2 = "tests.project.test_project:TestContext2"
 [tool.poetry.plugins."todo.project.SYSTEM"]
 archive = "todo.plugins:Archive"
 unfinished = "todo.plugins:DueUnfinished"
+shell = "todo.plugins:Shell"
 
 [build-system]
 requires = ["poetry-core"]

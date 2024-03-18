@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from urllib import error, request
 
 from loguru import logger
@@ -18,7 +18,6 @@ class DateFilter(BaseFilter):
 
     def __call__(self, todo: TodoItem, process):
         if not self._check(todo.context):
-            todo.due = datetime.now() + timedelta(days=1)
             process(todo, Option.BREAK)
 
     def _check(self, contexts: list[str]):
