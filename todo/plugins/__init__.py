@@ -1,7 +1,5 @@
 from .notify import Email, Gotify
-from .shell import Shell
-from .system import Archive, DateFilter, Done, DueUnfinished, TimeFilter, Update, WeatherFilter
-from .weather import Weather
+from .system import Archive, DateFilter, Done, DueUnfinished, Shell, TimeFilter, Update, Weather, WeatherFilter
 
 __all__ = [
     "Done",
