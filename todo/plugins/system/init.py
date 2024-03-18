@@ -8,8 +8,7 @@ from todo.project import BaseContext, Option
 
 
 @dataclass
-class Init(BaseContext):
-    archive_recurrence: str = ""
+class BaseInit(BaseContext):
     due_with_unfinished: bool = False
 
     def __call__(self, todo: TodoItem, process):
@@ -17,24 +16,6 @@ class Init(BaseContext):
             process(todo, Option.MODIFY_ALL)
 
     def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
-        # 优先级A的归档脚本
-        if self.archive_recurrence:
-            pattern = re.compile(r"\d+[dwmy]")
-            assert pattern.match(self.archive_recurrence), "Invalid archive due format"
-            archive_script = self._fetch("archive", todotxt, process)
-            if archive_script:
-                archive_script.priority = "A"
-                archive_script.recurrence = self.archive_recurrence
-            else:
-                archive_script = TodoItem(
-                    "@archive @done +SYSTEM", priority="A", recurrence=self.archive_recurrence, due=datetime.now()
-                )
-                process(archive_script, Option.FORMAT | Option.ADD | Option.EXECUTE)
-        else:
-            archive_script = self._fetch("archive", todotxt, process)
-            if archive_script:
-                process(archive_script, Option.FORMAT | Option.REMOVE)
-
         # 优先级A的未完成任务执行脚本
         if self.due_with_unfinished:
             if not self._check("unfinished", todotxt):
@@ -73,3 +54,28 @@ class Init(BaseContext):
                 process(new, Option.REMOVE)
                 new = todo
         return new
+
+
+@dataclass
+class Init(BaseInit):
+    archive_recurrence: str = ""
+
+    def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
+        # 优先级A的归档脚本
+        if self.archive_recurrence:
+            pattern = re.compile(r"\d+[dwmy]")
+            assert pattern.match(self.archive_recurrence), "Invalid archive due format"
+            archive_script = self._fetch("archive", todotxt, process)
+            if archive_script:
+                archive_script.priority = "A"
+                archive_script.recurrence = self.archive_recurrence
+            else:
+                archive_script = TodoItem(
+                    "@archive @done +SYSTEM", priority="A", recurrence=self.archive_recurrence, due=datetime.now()
+                )
+                process(archive_script, Option.FORMAT | Option.ADD | Option.EXECUTE)
+        else:
+            archive_script = self._fetch("archive", todotxt, process)
+            if archive_script:
+                process(archive_script, Option.FORMAT | Option.REMOVE)
+        super().modify_all(todo, todotxt, process)
