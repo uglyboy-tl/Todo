@@ -29,11 +29,11 @@ class Init(BaseContext):
                 archive_script = TodoItem(
                     "@archive @done +SYSTEM", priority="A", recurrence=self.archive_recurrence, due=datetime.now()
                 )
-                process(archive_script, Option.ADD | Option.EXECUTE)
+                process(archive_script, Option.FORMAT | Option.ADD | Option.EXECUTE)
         else:
             archive_script = self._fetch("archive", todotxt, process)
             if archive_script:
-                process(archive_script, Option.REMOVE)
+                process(archive_script, Option.FORMAT | Option.REMOVE)
 
         # 优先级A的未完成任务执行脚本
         if self.due_with_unfinished:
@@ -44,7 +44,7 @@ class Init(BaseContext):
                     process(due_script, Option.EXECUTE)
                 elif not due_script:
                     due_script = TodoItem("@unfinished @done +SYSTEM", due=datetime.now())
-                    process(due_script, Option.ADD | Option.EXECUTE)
+                    process(due_script, Option.FORMAT | Option.ADD | Option.EXECUTE)
                 due_script.recurrence = "1d"
                 due_script.priority = "A"
         else:

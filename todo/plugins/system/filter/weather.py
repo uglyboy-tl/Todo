@@ -30,8 +30,7 @@ class WeatherFilter(BaseFilter):
         else:
             if self._no_weather_todo(todotxt):
                 get_weather = TodoItem("@weather @done +SYSTEM")
-                process(get_weather, Option.ADD)
-                process(get_weather, Option.EXECUTE)
+                process(get_weather, Option.FORMAT | Option.ADD | Option.EXECUTE)
             process(todo, Option.BREAK)
             process(todo, Option.EXECUTE)
 
