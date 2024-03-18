@@ -31,7 +31,8 @@ class Weather(BaseContext):
                 notify = TodoItem(f"{weather.strip()} @#weather @notify @done")
                 process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
             else:
-                notify = TodoItem(f"{weather.strip()} @#weather @done")
+                notify = TodoItem(f"{weather.strip()} @#weather +SYSTEM")
+                notify.done()
                 process(notify, Option.FORMAT | Option.ADD)
         except error.URLError as e:
             logger.error(f"URL错误: {e.reason}")
