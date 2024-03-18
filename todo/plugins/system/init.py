@@ -21,7 +21,7 @@ class Init(BaseContext):
         if self.archive_recurrence:
             pattern = re.compile(r"\d+[dwmy]")
             assert pattern.match(self.archive_recurrence), "Invalid archive due format"
-            archive_script = self.fetch("archive", todotxt, process)
+            archive_script = self._fetch("archive", todotxt, process)
             if archive_script:
                 archive_script.priority = "A"
                 archive_script.recurrence = self.archive_recurrence
@@ -31,26 +31,36 @@ class Init(BaseContext):
                 )
                 process(archive_script, Option.ADD | Option.EXECUTE)
         else:
-            archive_script = self.fetch("archive", todotxt, process)
+            archive_script = self._fetch("archive", todotxt, process)
             if archive_script:
                 process(archive_script, Option.REMOVE)
 
+        # 优先级A的未完成任务执行脚本
         if self.due_with_unfinished:
-            due_script = self.fetch("unfinished", todotxt, process)
-            if due_script and due_script.due.date() != datetime.now().date():
-                due_script.due = datetime.now()
-                process(due_script, Option.EXECUTE)
-            elif not due_script:
-                due_script = TodoItem("@unfinished @done +SYSTEM", due=datetime.now())
-                process(due_script, Option.ADD | Option.EXECUTE)
-            due_script.recurrence = "1d"
-            due_script.priority = "A"
+            if not self._check("unfinished", todotxt):
+                due_script = self._fetch("unfinished", todotxt, process)
+                if due_script and due_script.due.date() != datetime.now().date():
+                    due_script.due = datetime.now()
+                    process(due_script, Option.EXECUTE)
+                elif not due_script:
+                    due_script = TodoItem("@unfinished @done +SYSTEM", due=datetime.now())
+                    process(due_script, Option.ADD | Option.EXECUTE)
+                due_script.recurrence = "1d"
+                due_script.priority = "A"
         else:
-            due_script = self.fetch("unfinished", todotxt, process)
+            due_script = self._fetch("unfinished", todotxt, process)
             if due_script:
                 process(due_script, Option.REMOVE)
 
-    def fetch(self, script: str, todotxt: TodoTxt, process) -> Optional[TodoItem]:
+    # 检查脚本是否已经执行过
+    def _check(self, script: str, todotxt: TodoTxt) -> bool:
+        for todo in todotxt.search(script, completed=True):
+            if todo.due.date() == datetime.now().date():
+                return True
+        return False
+
+    # 获取最新脚本，如果有多个脚本，删除多余的脚本
+    def _fetch(self, script: str, todotxt: TodoTxt, process) -> Optional[TodoItem]:
         new = None
         for todo in todotxt.search(script):
             if todo.completed:
@@ -59,9 +69,7 @@ class Init(BaseContext):
                 new = todo
             elif todo.due.date() < new.due.date():
                 process(todo, Option.REMOVE)
-                # todotxt.remove(todo)
             else:
                 process(new, Option.REMOVE)
-                # todotxt.remove(new)
                 new = todo
         return new

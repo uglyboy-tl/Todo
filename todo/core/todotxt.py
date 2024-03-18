@@ -18,6 +18,7 @@ class TodoTxt:
     _path: Path = field(init=False, repr=False)
     _init: bool = field(init=False, default=False)
     _dict: Dict[str, List[TodoItem]] = field(init=False, default_factory=dict)
+    _completed_dict: Dict[str, List[TodoItem]] = field(init=False, default_factory=dict)
 
     def __post_init__(self):
         self._path = Path(self.file_path)
@@ -125,8 +126,11 @@ class TodoTxt:
         todotxt = TodoTxt(todo_list=todo_list, read_only=True)
         return todotxt
 
-    def search(self, keyword: str) -> List[TodoItem]:
-        return self.dict.get(keyword, [])
+    def search(self, keyword: str, completed=False) -> List[TodoItem]:
+        if not completed:
+            return self.dict.get(keyword, [])
+        else:
+            return self.completed_dict.get(keyword, [])
 
     def _save(self):
         if self.read_only:
@@ -196,7 +200,16 @@ class TodoTxt:
                         self._dict[context].append(todo)
                     elif not todo.completed:
                         self._dict[context].append(todo)
+                    elif context not in self._completed_dict:
+                        self._completed_dict[context] = []
+                        self._completed_dict[context].append(todo)
         return self._dict
+
+    @property
+    def completed_dict(self):
+        if not self._completed_dict:
+            self.dict  # noqa: B018
+        return self._completed_dict
 
 
 def open_todotxt(file_path: str = "data/todo.txt") -> TodoTxt:
