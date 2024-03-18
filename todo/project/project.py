@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Type, Union
+from typing import Any, Dict, List, Type, Union
 
 from loguru import logger
 from stevedore import ExtensionManager
@@ -8,6 +8,21 @@ from todo.core import TodoItem, TodoTxt
 
 from .context import BaseContext, BaseFilter
 from .schema import Config, Option, Parameter
+
+SYSTEM_SCRIPTS = [
+    "done",
+    "update",
+    "time_filter",
+    "date_filter",
+    "weather_filter",
+    "weather",
+    "notify",
+]
+
+OPTION_SCRITPS = [
+    "weather",
+    "notify",
+]
 
 
 @dataclass
@@ -88,7 +103,7 @@ class Project:
         context_private_type_set = {context.name for context in context_private_plugins}
 
         scripts = []
-        for script in config.script_configs:
+        for script in cls.merge_system_scripts(config.script_configs):
             assert "name" in script.keys()
             if "type" not in script.keys():
                 script["type"] = script["name"]
@@ -101,4 +116,23 @@ class Project:
                 continue
             scripts.append(script)
         scripts.sort(key=lambda x: 1 if isinstance(x, BaseFilter) else 0, reverse=True)
+        logger.trace(f"Project:{config.name}\nScripts: {[script.name for script in scripts]}")
         return cls(config.name, scripts, config)
+
+    @staticmethod
+    def merge_system_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        option_scripts = [script["name"] for script in script_configs if script["name"] in OPTION_SCRITPS]
+        if option_scripts:
+            merge_scripts = [
+                {"name": script, "type": script} for script in SYSTEM_SCRIPTS if script not in option_scripts
+            ]
+        else:
+            merge_scripts = [{"name": script, "type": script} for script in SYSTEM_SCRIPTS]
+        merge_scripts.extend(
+            [
+                script
+                for script in script_configs
+                if script["name"] not in SYSTEM_SCRIPTS or script["name"] in OPTION_SCRITPS
+            ]
+        )
+        return merge_scripts

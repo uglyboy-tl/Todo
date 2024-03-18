@@ -5,6 +5,7 @@ import yaml
 
 from todo.core import TodoItem, TodoTxt
 from todo.project import BaseContext, Config, Option, Project
+from todo.project.project import SYSTEM_SCRIPTS
 
 TODAY = time.strftime("%Y-%m-%d")
 
@@ -143,7 +144,7 @@ def test_project_load():
     file_path = "data/project/test.yaml"
     project_init(file_path)
     project = Project.load(file_path, "test")
-    assert len(project.scripts) == 2
+    assert len(project.scripts) == 2 + len(SYSTEM_SCRIPTS)
 
     # Call
     todo_txt1 = TodoTxt()
@@ -167,9 +168,9 @@ def test_project_load_contexts():
     project_init(file_path)
     todo_txt = TodoTxt(todo_list=[])
     project = Project.load(file_path, "test")
-    assert len(project.scripts) == 2
-    reminder = project.scripts[0]
-    alert = project.scripts[1]
+    assert len(project.scripts) == 2 + len(SYSTEM_SCRIPTS)
+    reminder = project.scripts[len(SYSTEM_SCRIPTS)]
+    alert = project.scripts[len(SYSTEM_SCRIPTS) + 1]
 
     assert reminder.name == "addone"
     assert alert.name == "test2"
