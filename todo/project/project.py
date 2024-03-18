@@ -30,10 +30,12 @@ class Project:
                 todo = self._format(todo)
             if type == Option.ADD:
                 todotxt.append(todo)
+                logger.trace(f"Append todo: {todo}")
             if type == Option.EXECUTE:
                 todolist.append(todo)
             if type == Option.REMOVE:
                 todotxt.remove(todo)
+                logger.trace(f"Remove todo: {todo}")
                 if todo in todolist:
                     todolist.remove(todo)
             if type == Option.BREAK:
@@ -56,7 +58,7 @@ class Project:
                 if script.match(todo.context):
                     script(todo, process)
                     if "#all" in todo.context:
-                        logger.trace(f"Modifying all: {todo}")
+                        logger.trace(f"Modifying All: {todo}")
                         todo.context.remove("#all")
                         script.modify_all(todo, todotxt, process)
                     if "#break" in todo.context:
@@ -84,7 +86,6 @@ class Project:
         # context_plugins.extend(list(ExtensionManager(namespace=f"todo.project.{config.name}", invoke_on_load=False)))
         context_type_set = {context.name for context in context_plugins}
         context_private_type_set = {context.name for context in context_private_plugins}
-        logger.trace(f"Contexts: {context_type_set}")
 
         scripts = []
         for script in config.script_configs:

@@ -5,7 +5,6 @@ from shutil import copy2
 from typing import Dict, List, Optional, Union, overload
 
 from dateutil.relativedelta import relativedelta
-from loguru import logger
 
 from .todo import TodoItem
 
@@ -42,7 +41,6 @@ class TodoTxt:
 
     def remove(self, todo: TodoItem):
         self.todo_list.remove(todo)
-        logger.trace(f"Remove todo: {todo}")
         for context in todo.context:
             if context in self.dict and todo in self.dict[context]:
                 if context.startswith("#"):
@@ -213,7 +211,7 @@ class TodoTxt:
 
     @property
     def output(self):
-        return "\n".join([str(todo) for todo in self.todo_list if "SYSTEM" not in todo.project and not todo.completed])
+        return "\n".join([str(todo) for todo in self.sort() if "SYSTEM" not in todo.project and not todo.completed])
 
 
 def open_todotxt(file_path: str = "data/todo.txt") -> TodoTxt:
