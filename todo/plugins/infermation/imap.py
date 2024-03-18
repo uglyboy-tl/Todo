@@ -37,15 +37,7 @@ class IMAP(BaseContext):
             return
 
         num = len(mail_ids)
-        if num == 0:
-            logger.info("没有新邮件")
-            return
-        elif num > 1:
-            logger.warning("有多封新邮件")
-            notify = TodoItem(f"{self.name} 收到 {num} 封邮件 @notify @done")
-            process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
-        else:
-            logger.info("有一封新邮件")
+        if num == 1:
             latest_email_id = mail_ids[-1]  # 获取最后一封邮件的编号
             # 使用fetch方法获取邮件内容
             status, data = mail.fetch(latest_email_id, "(RFC822)")
@@ -55,4 +47,7 @@ class IMAP(BaseContext):
             email_message = email.message_from_bytes(raw_email)
 
             notify = TodoItem(f"{self.name} 收到来自 {email_message['From']} 的邮件 @notify @done")
+            process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
+        elif num > 1:
+            notify = TodoItem(f"{self.name} 收到 {num} 封邮件 @notify @done")
             process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)

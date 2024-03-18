@@ -41,19 +41,23 @@ class Project:
             if type == Option.DONE:
                 todotxt.done(todo)
             if type == Option.MODIFY_ALL:
-                todo.context.append("#modify_all")
+                todo.context.append("#all")
             return todo
 
         index = 0
         while index < len(todolist):
             todo = todolist[index]
             logger.debug(f"Processing: {todo}")
+            if "#break" in todo.context:
+                todo.context.remove("#break")
+            if "#all" in todo.context:
+                todo.context.remove("#all")
             for script in self.scripts:
                 if script.match(todo.context):
                     script(todo, process)
-                    if "#modify_all" in todo.context:
+                    if "#all" in todo.context:
                         logger.trace(f"Modifying all: {todo}")
-                        todo.context.remove("#modify_all")
+                        todo.context.remove("#all")
                         script.modify_all(todo, todotxt, process)
                     if "#break" in todo.context:
                         logger.trace(f"Skipping: {todo}")
