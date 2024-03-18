@@ -5,6 +5,7 @@ from shutil import copy2
 from typing import Dict, List, Optional, Union, overload
 
 from dateutil.relativedelta import relativedelta
+from loguru import logger
 
 from .todo import TodoItem
 
@@ -25,8 +26,11 @@ class TodoTxt:
         else:
             self._init = True
 
-    def append(self, todo: TodoItem):
-        self.todo_list.append(todo)
+    def append(self, todo: TodoItem, head: bool = False):
+        if head:
+            self.todo_list.insert(0, todo)
+        else:
+            self.todo_list.append(todo)
         for context in todo.context:
             if context not in self.dict:
                 self.dict[context] = []
@@ -34,6 +38,16 @@ class TodoTxt:
                 self.dict[context].append(todo)
             elif not todo.completed:
                 self.dict[context].append(todo)
+
+    def remove(self, todo: TodoItem):
+        self.todo_list.remove(todo)
+        logger.trace(f"Remove todo: {todo}")
+        for context in todo.context:
+            if context in self.dict and todo in self.dict[context]:
+                if context.startswith("#"):
+                    self.dict[context].remove(todo)
+                elif not todo.completed:
+                    self.dict[context].remove(todo)
 
     @overload
     def done(self, todo: int):
@@ -97,8 +111,7 @@ class TodoTxt:
             key=lambda x: (
                 x.completed,
                 x.priority if x.priority is not None else str("Z"),
-                x.due if x.due is not None else datetime.max,
-                x.creation_date if x.creation_date is not None else datetime.max,
+                x.due.date() if x.due is not None else datetime.max.date(),
             ),
         )
         return self
