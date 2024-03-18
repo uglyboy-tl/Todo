@@ -1,5 +1,6 @@
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import yaml
 from loguru import logger
@@ -15,6 +16,7 @@ class Option(Enum):
     BREAK = 3  # 第3位
     DONE = 4  # 第4位
     MODIFY_ALL = 5  # 第5位
+    REMOVE = 6  # 第6位
     # 根据需要添加更多选项
 
     def __or__(self, other: Union["Option", int]) -> int:
@@ -53,7 +55,8 @@ class Parameter:
 
 class Config(BaseModel):
     name: str = ""
-    context_configs: List[Dict[str, Any]] = []
+    script_configs: List[Dict[str, Any]] = []
+    start_script: Optional[str] = None
 
     @classmethod
     def load(cls, file_path: str, name: str = ""):
@@ -72,4 +75,10 @@ class Config(BaseModel):
             return cls.model_validate(obj)
 
     def init(self, todotxt: TodoTxt):
-        return
+        if self.start_script:
+            # 校验 self.start_script 中间没有空格
+            assert " " not in self.start_script, f"Start script {self.start_script} should not contain space"
+            need_to_remove = todotxt.search(self.start_script).copy()
+            for todo in need_to_remove:
+                todotxt.remove(todo)
+            todotxt.append(TodoItem(f"@{self.start_script} +{self.name}", priority="A", due=datetime.now()), head=True)

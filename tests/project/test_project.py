@@ -94,8 +94,8 @@ def test_config_load():
     # Assert
     assert isinstance(config, Config)
     assert config.name == "example"
-    assert isinstance(config.context_configs, list)
-    assert len(config.context_configs) == 0  # Assuming the config file is empty
+    assert isinstance(config.script_configs, list)
+    assert len(config.script_configs) == 0  # Assuming the config file is empty
 
 
 def test_config_load_with_data():
@@ -103,7 +103,7 @@ def test_config_load_with_data():
     file_path = "data/project/test.yaml"
     data = {
         "name": "example",
-        "context_configs": [
+        "script_configs": [
             {"name": "alert", "priority": 1},
             {"name": "reminder", "priority": 2},
         ],
@@ -117,18 +117,18 @@ def test_config_load_with_data():
     # Assert
     assert isinstance(config, Config)
     assert config.name == "example"
-    assert isinstance(config.context_configs, list)
-    assert len(config.context_configs) == 2
-    assert config.context_configs[0]["name"] == "alert"
-    assert config.context_configs[0]["priority"] == 1
-    assert config.context_configs[1]["name"] == "reminder"
-    assert config.context_configs[1]["priority"] == 2
+    assert isinstance(config.script_configs, list)
+    assert len(config.script_configs) == 2
+    assert config.script_configs[0]["name"] == "alert"
+    assert config.script_configs[0]["priority"] == 1
+    assert config.script_configs[1]["name"] == "reminder"
+    assert config.script_configs[1]["priority"] == 2
 
 
 def project_init(file_path: str):
     data = {
         "name": "example",
-        "context_configs": [
+        "script_configs": [
             {"name": "addone", "type": "test1"},
             {"name": "test2"},
             {"name": "addone", "type": "notest"},

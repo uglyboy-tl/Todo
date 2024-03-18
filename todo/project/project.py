@@ -32,6 +32,10 @@ class Project:
                 todotxt.append(todo)
             if type == Option.EXECUTE:
                 todolist.append(todo)
+            if type == Option.REMOVE:
+                todotxt.remove(todo)
+                if todo in todolist:
+                    todolist.remove(todo)
             if type == Option.BREAK:
                 todo.context.append("#break")
             if type == Option.DONE:
@@ -43,7 +47,7 @@ class Project:
         index = 0
         while index < len(todolist):
             todo = todolist[index]
-            logger.trace(f"Processing: {todo}")
+            logger.debug(f"Processing: {todo}")
             for script in self.scripts:
                 if script.match(todo.context):
                     script(todo, process)
@@ -79,17 +83,17 @@ class Project:
         logger.trace(f"Contexts: {context_type_set}")
 
         scripts = []
-        for context in config.context_configs:
-            assert "name" in context.keys()
-            if "type" not in context.keys():
-                context["type"] = context["name"]
-            if context["type"] in context_type_set:
-                context = context_plugins[context.pop("type")].plugin(**context)
-            elif context["type"] in context_private_type_set:
-                context = context_private_plugins[context.pop("type")].plugin(**context)
+        for script in config.script_configs:
+            assert "name" in script.keys()
+            if "type" not in script.keys():
+                script["type"] = script["name"]
+            if script["type"] in context_type_set:
+                script = context_plugins[script.pop("type")].plugin(**script)
+            elif script["type"] in context_private_type_set:
+                script = context_private_plugins[script.pop("type")].plugin(**script)
             else:
-                logger.warning(f"Context `@{context['type']}` not found, skipping")
+                logger.warning(f"Context `@{script['type']}` not found, skipping")
                 continue
-            scripts.append(context)
+            scripts.append(script)
         scripts.sort(key=lambda x: 1 if isinstance(x, BaseFilter) else 0, reverse=True)
         return cls(config.name, scripts, config)
