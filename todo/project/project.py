@@ -1,13 +1,12 @@
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Type, Union
+from dataclasses import dataclass
+from typing import Any, Dict, List, Type
 
 from loguru import logger
 from stevedore import ExtensionManager
 
-from todo.core import TodoItem, TodoTxt
-
+from .base import BaseProject
+from .config import Config
 from .context import BaseContext, BaseFilter
-from .schema import Config, Option, Parameter
 
 SYSTEM_SCRIPTS = [
     "done",
@@ -27,11 +26,7 @@ OPTION_SCRITPS = [
 
 
 @dataclass
-class Project:
-    config: Config = field(default_factory=Config)
-    name: str = ""
-    scripts: List[BaseContext] = field(default_factory=list)
-
+class Project(BaseProject):
     def __post_init__(self):
         if self.config and not self.name:
             self.name = self.config.name
@@ -65,75 +60,6 @@ class Project:
                 reverse=True,
             )
             logger.trace(f"Project:{self.name}\nScripts: {[script.name for script in self.scripts]}")
-
-    def __call__(self, todotxt: TodoTxt):
-        self._add_init_script(todotxt)
-        todolist = todotxt[self.name].alert().sort()
-        logger.info(f"Start Project: {self.name}")
-        logger.trace(f"TodoList:\n{todolist}")
-        todolist = todolist.todo_list
-
-        def process(todo: TodoItem, type: Union[Parameter, int] = 1) -> Union[TodoItem, List[TodoItem]]:
-            if isinstance(type, int):
-                type = Parameter(type)
-            if type == Option.SEARCH:
-                assert len(todo.context) == 1
-                query = todo.context[0]
-                return todotxt.search(query)
-            if type == Option.FORMAT:
-                todo = self._format_todo(todo)
-            if type == Option.ADD:
-                todotxt.append(todo)
-                logger.trace(f"Append todo: {todo}")
-            if type == Option.EXECUTE:
-                todolist.append(todo)
-            if type == Option.REMOVE:
-                todotxt.remove(todo)
-                logger.trace(f"Remove todo: {todo}")
-                if todo in todolist:
-                    todolist.remove(todo)
-            if type == Option.BREAK:
-                todo.context.append("#break")
-            if type == Option.DONE:
-                todotxt.done(todo)
-            if type == Option.MODIFY_ALL:
-                todo.context.append("#all")
-            if type == Option.ARCHIVE:
-                todo.context.append("#archive")
-            return todo
-
-        index = 0
-        while index < len(todolist):
-            todo = todolist[index]
-            logger.trace(f"Processing: {todo}")
-            if "#break" in todo.context:
-                todo.context.remove("#break")
-            if "#all" in todo.context:
-                todo.context.remove("#all")
-            if "#archive" in todo.context:
-                todo.context.remove("#archive")
-            for script in self.scripts:
-                if script.match(todo.context):
-                    script(todo, process)
-                    if "#all" in todo.context:
-                        logger.trace(f"Modifying All with @{script.name}: {todo}")
-                        todo.context.remove("#all")
-                        script.modify_all(todo, todotxt[self.name], process)
-                    if "#archive" in todo.context:
-                        logger.trace("Archiving TodoTXT")
-                        todo.context.remove("#archive")
-                        todotxt.archive()
-                    if "#break" in todo.context:
-                        logger.trace(f"Skipping: {todo}")
-                        todo.context.remove("#break")
-                        break
-            index += 1
-
-    def _format_todo(self, todo: TodoItem):
-        return self.config.format_todo(todo)
-
-    def _add_init_script(self, todotxt: TodoTxt):
-        self.config.add_init_script(todotxt)
 
     @classmethod
     def load(cls, file_path: str, name: str = "SYSTEM"):

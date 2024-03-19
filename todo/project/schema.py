@@ -55,13 +55,10 @@ class Parameter:
         self.value &= ~mask
 
 
-class Config(BaseModel):
+class BaseConfig(BaseModel):
     name: str = ""
     start_script: Optional[str] = None
     script_configs: List[Dict[str, Any]] = []
-    archive_recurrence: str = "1d"
-    due_with_unfinished: bool = False
-    alert_days: int = 0
 
     def model_post_init(self, __context: Any):
         self._dict: [str, Dict[str, Any]] = {
@@ -69,10 +66,6 @@ class Config(BaseModel):
         }
 
         self._init_config = self._get_init_config()
-
-        self._process_script_config("archive", self.archive_recurrence and self.name == "SYSTEM")
-        self._process_script_config("unfinished", self.due_with_unfinished)
-        self._process_script_config("alert", self.alert_days, ["alert_days"])
 
     def _get_init_config(self):
         init_list = [item for item in self.script_configs if item.get("name") == "init"]
@@ -86,25 +79,7 @@ class Config(BaseModel):
                 init_config = {"name": "init", "type": "init"}
             self.script_configs.append(init_config)
             self._dict["init"] = init_config
-        init_config["due_with_unfinished"] = self.due_with_unfinished
-        init_config["alert_days"] = self.alert_days
-        if self.name == "SYSTEM":
-            init_config["archive_recurrence"] = self.archive_recurrence
         return init_config
-
-    def _process_script_config(self, name: str, condition: bool, params: Optional[List[str]] = None):
-        if condition:
-            if name not in self._dict:
-                config = {"name": name, "type": name}
-                if params:
-                    config.update({param: self._init_config[param] for param in params})
-                self.script_configs.append(config)
-            elif params:
-                self._dict[name].update({param: self._init_config[param] for param in params})
-        else:
-            if name in self._dict:
-                config = self._dict.pop(name)
-                self.script_configs.remove(config)
 
     def add_init_script(self, todotxt: TodoTxt):
         need_to_remove = todotxt.search("init").copy()
@@ -134,7 +109,7 @@ class Config(BaseModel):
             return cls.model_validate(obj)
 
     @classmethod
-    def load_all(cls, file_path: str) -> List["Config"]:
+    def load_all(cls, file_path: str) -> List["BaseConfig"]:
         with open(file_path) as f:
             y = yaml.load_all(f, Loader=yaml.FullLoader)
             return [cls.model_validate(data) for data in y]
