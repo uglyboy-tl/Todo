@@ -80,8 +80,7 @@ class Project:
             if type == Option.SEARCH:
                 assert len(todo.context) == 1
                 query = todo.context[0]
-                assert query.startswith("#")
-                return todolist.search(query)
+                return todotxt.search(query)
             if type == Option.FORMAT:
                 todo = self._format_todo(todo)
             if type == Option.ADD:

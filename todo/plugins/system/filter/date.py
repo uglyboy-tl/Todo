@@ -6,7 +6,7 @@ from urllib import error, request
 
 from loguru import logger
 
-from todo.core import TodoItem, TodoTxt
+from todo.core import TodoItem
 from todo.project import BaseFilter, Option
 
 HOLIDAY_URL = "https://timor.tech/api/holiday/info/{}"
@@ -18,10 +18,7 @@ class DateFilter(BaseFilter):
     regex: str = r"^holiday|workday$"
 
     def __call__(self, todo: TodoItem, process):
-        process(todo, Option.MODIFY_ALL)
-
-    def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
-        if not self._check(todo.context, self._get_holiday(todotxt), process):
+        if not self._check(todo.context, self._get_holiday(process), process):
             process(todo, Option.BREAK)
 
     def _check(self, contexts: list[str], data: Optional[str], process):
@@ -55,8 +52,8 @@ class DateFilter(BaseFilter):
             response = obj["holiday"]
             return response is not None and date_filter == response["name"]
 
-    def _get_holiday(self, todotxt: TodoTxt) -> Optional[str]:
-        for todo in todotxt.search("#holiday"):
+    def _get_holiday(self, process) -> Optional[str]:
+        for todo in process(TodoItem("@#holiday"), Option.SEARCH):
             if todo.creation_date.date() == datetime.now().date():
                 return todo.message
         return None
