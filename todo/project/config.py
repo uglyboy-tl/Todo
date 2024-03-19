@@ -38,7 +38,7 @@ def merge_system_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str,
 
 class Config(BaseConfig):
     archive_recurrence: str = "1d"
-    due_with_unfinished: bool = False
+    due_with_unfinished: bool = True
     alert_days: int = 0
 
     def model_post_init(self, __context: Any):

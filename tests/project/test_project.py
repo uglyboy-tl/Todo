@@ -30,6 +30,8 @@ class TestContext2(BaseContext):
 def project_init(file_path: str):
     data = {
         "name": "test",
+        "due_with_unfinished": False,
+        "alert_days": 0,
         "script_configs": [
             {"name": "addone", "type": "test1"},
             {"name": "test2"},
@@ -42,14 +44,14 @@ def project_init(file_path: str):
 
 def test_project_load():
     # Setup
-    file_path = "data/project/test.yaml"
+    file_path = "tests/data/test.yaml"
     project_init(file_path)
     project = Project.load(file_path, "test")
     print(project.scripts)
     assert len(project.scripts) == 3 + len(SYSTEM_SCRIPTS)
 
     # Call
-    todo_txt1 = TodoTxt()
+    todo_txt1 = TodoTxt(todo_list=[])
     todo_item = TodoItem(f"Test todo @test2 +test due:{TODAY}")
     todo_txt1.append(todo_item)
     project(todo_txt1)
@@ -66,7 +68,7 @@ def test_project_load():
 
 def test_project_load_contexts():
     # Setup
-    file_path = "data/project/test.yaml"
+    file_path = "tests/data/test.yaml"
     project_init(file_path)
     todo_txt = TodoTxt(todo_list=[])
     project = Project.load(file_path, "test")

@@ -6,7 +6,7 @@ from todo.project.schema import BaseConfig, Option
 
 def test_config_load():
     # Setup
-    file_path = "data/project/test.yaml"
+    file_path = "tests/data/test.yaml"
     data = {
         "name": "test",
     }
@@ -25,7 +25,7 @@ def test_config_load():
 
 def test_config_load_with_data():
     # Setup
-    file_path = "data/project/test.yaml"
+    file_path = "tests/data/test.yaml"
     data = {
         "name": "test",
         "script_configs": [
@@ -90,7 +90,7 @@ def test_base_config_get_init_config():
 def test_base_config_add_init_script():
     # Setup
     config = BaseConfig(name="test")
-    todotxt = TodoTxt()
+    todotxt = TodoTxt(todo_list=[])
     todo = TodoItem("Test todo item")
 
     # Call
@@ -104,7 +104,7 @@ def test_base_config_add_init_script():
 
 def test_base_config_load():
     # Setup
-    file_path = "data/project/test.yaml"
+    file_path = "tests/data/test.yaml"
 
     # Call
     config = BaseConfig.load(file_path, name="test")
@@ -122,7 +122,7 @@ def test_base_config_load():
 
 def test_base_config_load_all():
     # Setup
-    file_path = "data/project/test.yaml"
+    file_path = "tests/data/test.yaml"
 
     # Call
     configs = BaseConfig.load_all(file_path)
