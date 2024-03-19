@@ -10,6 +10,7 @@ SYSTEM_SCRIPTS = [
     "time_filter",
     "date_filter",
     "weather_filter",
+    "check_holiday",
     "weather",
     "notify",
 ]
