@@ -28,7 +28,7 @@ class WeatherFilter(BaseFilter):
             if not self._check(weather, weather_filter):
                 process(todo, Option.BREAK)
         else:
-            if self._no_weather_todo(todotxt):
+            if self._no_weather_todo(todotxt, process):
                 get_weather = TodoItem("@weather @done +SYSTEM")
                 process(get_weather, Option.FORMAT | Option.ADD | Option.EXECUTE)
             process(todo, Option.BREAK)
@@ -40,11 +40,28 @@ class WeatherFilter(BaseFilter):
                 return todo
         return None
 
-    def _no_weather_todo(self, todotxt: TodoTxt):
+    def _no_weather_todo(self, todotxt: TodoTxt, process):
+        """
         for todo in todotxt.search("weather"):
             if todo.due.date() == datetime.now().date():
                 return False
         return True
+        """
+        new = None
+        for todo in todotxt.search("weather"):
+            if todo.completed:
+                continue
+            elif new is None:
+                new = todo
+            elif todo.due.date() < new.due.date():
+                process(todo, Option.REMOVE)
+            else:
+                process(new, Option.REMOVE)
+                new = todo
+        if not new:
+            return True
+        new.due = datetime.now()
+        return False
 
     def _check(self, todo: TodoItem, weather_filter: str):
         pattern = re.compile(r"^今日天气: (.*)。")

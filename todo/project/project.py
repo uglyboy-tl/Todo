@@ -75,7 +75,7 @@ class Project:
                 if script.match(todo.context):
                     script(todo, process)
                     if "#all" in todo.context:
-                        logger.trace(f"Modifying All: {todo}")
+                        logger.trace(f"Modifying All with @{script.name}: {todo}")
                         todo.context.remove("#all")
                         script.modify_all(todo, todotxt[self.name], process)
                     if "#archive" in todo.context:
