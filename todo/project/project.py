@@ -12,8 +12,6 @@ from .schema import Config, Option, Parameter
 SYSTEM_SCRIPTS = [
     "done",
     "update",
-    "unfinished",
-    "alert",
     "time_filter",
     "date_filter",
     "weather_filter",
@@ -135,7 +133,7 @@ class Project:
         return self.config.format_todo(todo)
 
     def _add_init_script(self, todotxt: TodoTxt):
-        self.config.add_Init_script(todotxt)
+        self.config.add_init_script(todotxt)
 
     @classmethod
     def load(cls, file_path: str, name: str = "SYSTEM"):

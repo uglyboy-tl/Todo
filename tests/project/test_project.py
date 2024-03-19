@@ -96,7 +96,7 @@ def test_config_load():
     assert isinstance(config, Config)
     assert config.name == "test"
     assert isinstance(config.script_configs, list)
-    assert len(config.script_configs) == 0  # Assuming the config file is empty
+    assert len(config.script_configs) == 1  # Assuming the config file is empty
 
 
 def test_config_load_with_data():
@@ -105,7 +105,7 @@ def test_config_load_with_data():
     data = {
         "name": "test",
         "script_configs": [
-            {"name": "alert", "priority": 1},
+            {"name": "alert1", "priority": 1},
             {"name": "reminder", "priority": 2},
         ],
     }
@@ -119,8 +119,8 @@ def test_config_load_with_data():
     assert isinstance(config, Config)
     assert config.name == "test"
     assert isinstance(config.script_configs, list)
-    assert len(config.script_configs) == 2
-    assert config.script_configs[0]["name"] == "alert"
+    assert len(config.script_configs) == 3
+    assert config.script_configs[0]["name"] == "alert1"
     assert config.script_configs[0]["priority"] == 1
     assert config.script_configs[1]["name"] == "reminder"
     assert config.script_configs[1]["priority"] == 2
@@ -145,7 +145,7 @@ def test_project_load():
     project_init(file_path)
     project = Project.load(file_path, "test")
     print(project.scripts)
-    assert len(project.scripts) == 2 + len(SYSTEM_SCRIPTS)
+    assert len(project.scripts) == 3 + len(SYSTEM_SCRIPTS)
 
     # Call
     todo_txt1 = TodoTxt()
@@ -158,9 +158,9 @@ def test_project_load():
     todo_item = TodoItem(f"Test todo @addone +test due:{TODAY}")
     todo_txt2.append(todo_item)
     project(todo_txt2)
-    assert len(todo_txt2) == 2
-    assert todo_txt2[0].completed is True
-    assert todo_txt2[1].description == "Test New todo +test"
+    assert len(todo_txt2) == 3
+    assert todo_txt2[1].completed is True
+    assert todo_txt2[2].description == "Test New todo +test"
 
 
 def test_project_load_contexts():
@@ -169,7 +169,7 @@ def test_project_load_contexts():
     project_init(file_path)
     todo_txt = TodoTxt(todo_list=[])
     project = Project.load(file_path, "test")
-    assert len(project.scripts) == 2 + len(SYSTEM_SCRIPTS)
+    assert len(project.scripts) == 3 + len(SYSTEM_SCRIPTS)
     print(project.scripts)
     reminder = project.scripts[len(SYSTEM_SCRIPTS) - 3]
     alert = project.scripts[len(SYSTEM_SCRIPTS) - 2]

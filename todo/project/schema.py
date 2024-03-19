@@ -57,19 +57,68 @@ class Parameter:
 
 class Config(BaseModel):
     name: str = ""
-    script_configs: List[Dict[str, Any]] = []
     start_script: Optional[str] = None
+    script_configs: List[Dict[str, Any]] = []
+    archive_recurrence: str = "1d"
+    due_with_unfinished: bool = False
+    alert_days: int = 0
 
-    def add_Init_script(self, todotxt: TodoTxt):
-        if self.start_script:
-            # 校验 self.start_script 中间没有空格
-            assert " " not in self.start_script, f"Start script {self.start_script} should not contain space"
-            need_to_remove = todotxt.search(self.start_script).copy()
-            for todo in need_to_remove:
-                todotxt.remove(todo)
-            todotxt.append(
-                TodoItem(f"@{self.start_script} @#HIDDEN +{self.name}", priority="A", due=datetime.now()), head=True
-            )
+    def model_post_init(self, __context: Any):
+        _dict: [str, Dict[str, Any]] = {
+            item.get("type") if item.get("type") else item["name"]: item for item in self.script_configs
+        }
+
+        # Init
+        init_list = [item for item in self.script_configs if item.get("name") == "init"]
+        assert len(init_list) <= 1, f"Only one init script is allowed in {self.name}"
+        if init_list:
+            init_config = init_list[0]
+        else:
+            if self.name == "SYSTEM":
+                init_config = {"name": "init", "type": "sysinit"}
+            else:
+                init_config = {"name": "init", "type": "init"}
+            self.script_configs.append(init_config)
+            _dict["init"] = init_config
+        init_config["due_with_unfinished"] = self.due_with_unfinished
+        init_config["alert_days"] = self.alert_days
+        if self.name == "SYSTEM":
+            init_config["archive_recurrence"] = self.archive_recurrence
+
+        # Archive
+        if self.archive_recurrence and self.name == "SYSTEM":
+            if "archive" not in _dict:
+                self.script_configs.append({"name": "archive", "type": "archive"})
+        else:
+            if "archive" in _dict:
+                config = _dict.pop("archive")
+                self.script_configs.remove(config)
+
+        # Unfinished
+        if self.due_with_unfinished:
+            if "unfinished" not in _dict:
+                self.script_configs.append({"name": "unfinished", "type": "unfinished"})
+        else:
+            if "unfinished" in _dict:
+                config = _dict.pop("unfinished")
+                self.script_configs.remove(config)
+
+        # Alert
+        if self.alert_days:
+            if "alert" not in _dict:
+                self.script_configs.append({"name": "alert", "type": "alert", "days": init_config["alert_days"]})
+            else:
+                _dict["alert"]["days"] = init_config["alert_days"]
+        else:
+            if "alert" in _dict:
+                config = _dict.pop("alert")
+                self.script_configs.remove(config)
+
+    def add_init_script(self, todotxt: TodoTxt):
+        need_to_remove = todotxt.search("init").copy()
+        for todo in need_to_remove:
+            todotxt.remove(todo)
+        todotxt.append(TodoItem(f"@init @#HIDDEN +{self.name}", priority="A", due=datetime.now()), head=True)
 
     def format_todo(self, todo: TodoItem):
         if self.name not in todo.project and self.name != "SYSTEM":
