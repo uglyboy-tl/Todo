@@ -28,12 +28,47 @@ OPTION_SCRITPS = [
 
 @dataclass
 class Project:
+    config: Config = field(default_factory=Config)
     name: str = ""
     scripts: List[BaseContext] = field(default_factory=list)
-    config: Config = field(default_factory=Config)
+
+    def __post_init__(self):
+        if self.config and not self.name:
+            self.name = self.config.name
+        if self.config and not self.scripts:
+            context_plugins: List[Type[BaseContext]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
+            context_private_plugins: List[Type[BaseContext]] = ExtensionManager(
+                namespace=f"todo.project.{self.name}", invoke_on_load=False
+            )
+
+            # context_plugins.extend(list(ExtensionManager(namespace=f"todo.project.{config.name}", invoke_on_load=False)))
+            context_type_set = {context.name for context in context_plugins}
+            context_private_type_set = {context.name for context in context_private_plugins}
+
+            for script in self.merge_system_scripts(self.config.script_configs):
+                assert "name" in script.keys()
+                if "type" not in script.keys():
+                    script["type"] = script["name"]
+                if script["type"] in context_type_set:
+                    script = context_plugins[script.pop("type")].plugin(**script)
+                elif script["type"] in context_private_type_set:
+                    script = context_private_plugins[script.pop("type")].plugin(**script)
+                else:
+                    logger.warning(f"Context `@{script['type']}` not found, skipping")
+                    continue
+                self.scripts.append(script)
+            self.scripts.sort(
+                key=lambda x: 2
+                if isinstance(x, BaseFilter)
+                else 1
+                if x.name not in ["done", "update", "notify"]
+                else 0,
+                reverse=True,
+            )
+            logger.trace(f"Project:{self.name}\nScripts: {[script.name for script in self.scripts]}")
 
     def __call__(self, todotxt: TodoTxt):
-        self._init(todotxt)
+        self._add_init_script(todotxt)
         todolist = todotxt[self.name].alert().sort()
         logger.trace(f"TodoList:\n{todolist}")
         todolist = todolist.todo_list
@@ -42,7 +77,7 @@ class Project:
             if isinstance(type, int):
                 type = Parameter(type)
             if type == Option.FORMAT:
-                todo = self._format(todo)
+                todo = self._format_todo(todo)
             if type == Option.ADD:
                 todotxt.append(todo)
                 logger.trace(f"Append todo: {todo}")
@@ -88,45 +123,16 @@ class Project:
                         break
             index += 1
 
-    def _format(self, todo: TodoItem):
-        if self.name not in todo.project and self.name != "SYSTEM":
-            todo.add_project(self.name)
-        return todo
+    def _format_todo(self, todo: TodoItem):
+        return self.config.format_todo(todo)
 
-    def _init(self, todotxt: TodoTxt):
-        self.config.init(todotxt)
+    def _add_init_script(self, todotxt: TodoTxt):
+        self.config.add_Init_script(todotxt)
 
     @classmethod
-    def load(cls, file_path: str, name: str = ""):
+    def load(cls, file_path: str, name: str = "SYSTEM"):
         config: Config = Config.load(file_path, name)
-        context_plugins: List[Type[BaseContext]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
-        context_private_plugins: List[Type[BaseContext]] = ExtensionManager(
-            namespace=f"todo.project.{config.name}", invoke_on_load=False
-        )
-
-        # context_plugins.extend(list(ExtensionManager(namespace=f"todo.project.{config.name}", invoke_on_load=False)))
-        context_type_set = {context.name for context in context_plugins}
-        context_private_type_set = {context.name for context in context_private_plugins}
-
-        scripts = []
-        for script in cls.merge_system_scripts(config.script_configs):
-            assert "name" in script.keys()
-            if "type" not in script.keys():
-                script["type"] = script["name"]
-            if script["type"] in context_type_set:
-                script = context_plugins[script.pop("type")].plugin(**script)
-            elif script["type"] in context_private_type_set:
-                script = context_private_plugins[script.pop("type")].plugin(**script)
-            else:
-                logger.warning(f"Context `@{script['type']}` not found, skipping")
-                continue
-            scripts.append(script)
-        scripts.sort(
-            key=lambda x: 2 if isinstance(x, BaseFilter) else 1 if x.name not in ["done", "update", "notify"] else 0,
-            reverse=True,
-        )
-        logger.trace(f"Project:{config.name}\nScripts: {[script.name for script in scripts]}")
-        return cls(config.name, scripts, config)
+        return cls(config)
 
     @staticmethod
     def merge_system_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

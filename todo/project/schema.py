@@ -59,6 +59,20 @@ class Config(BaseModel):
     script_configs: List[Dict[str, Any]] = []
     start_script: Optional[str] = None
 
+    def add_Init_script(self, todotxt: TodoTxt):
+        if self.start_script:
+            # 校验 self.start_script 中间没有空格
+            assert " " not in self.start_script, f"Start script {self.start_script} should not contain space"
+            need_to_remove = todotxt.search(self.start_script).copy()
+            for todo in need_to_remove:
+                todotxt.remove(todo)
+            todotxt.append(TodoItem(f"@{self.start_script} +{self.name}", priority="A", due=datetime.now()), head=True)
+
+    def format_todo(self, todo: TodoItem):
+        if self.name not in todo.project and self.name != "SYSTEM":
+            todo.add_project(self.name)
+        return todo
+
     @classmethod
     def load(cls, file_path: str, name: str = ""):
         with open(file_path) as f:
@@ -75,11 +89,8 @@ class Config(BaseModel):
             logger.trace(f"Loading config from {file_path}: {obj}")
             return cls.model_validate(obj)
 
-    def init(self, todotxt: TodoTxt):
-        if self.start_script:
-            # 校验 self.start_script 中间没有空格
-            assert " " not in self.start_script, f"Start script {self.start_script} should not contain space"
-            need_to_remove = todotxt.search(self.start_script).copy()
-            for todo in need_to_remove:
-                todotxt.remove(todo)
-            todotxt.append(TodoItem(f"@{self.start_script} +{self.name}", priority="A", due=datetime.now()), head=True)
+    @classmethod
+    def load_all(cls, file_path: str) -> List["Config"]:
+        with open(file_path) as f:
+            y = yaml.load_all(f, Loader=yaml.FullLoader)
+            return [cls.model_validate(data) for data in y]
