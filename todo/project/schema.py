@@ -64,11 +64,17 @@ class Config(BaseModel):
     alert_days: int = 0
 
     def model_post_init(self, __context: Any):
-        _dict: [str, Dict[str, Any]] = {
+        self._dict: [str, Dict[str, Any]] = {
             item.get("type") if item.get("type") else item["name"]: item for item in self.script_configs
         }
 
-        # Init
+        self._init_config = self._get_init_config()
+
+        self._process_script_config("archive", self.archive_recurrence and self.name == "SYSTEM")
+        self._process_script_config("unfinished", self.due_with_unfinished)
+        self._process_script_config("alert", self.alert_days, ["alert_days"])
+
+    def _get_init_config(self):
         init_list = [item for item in self.script_configs if item.get("name") == "init"]
         assert len(init_list) <= 1, f"Only one init script is allowed in {self.name}"
         if init_list:
@@ -79,39 +85,25 @@ class Config(BaseModel):
             else:
                 init_config = {"name": "init", "type": "init"}
             self.script_configs.append(init_config)
-            _dict["init"] = init_config
+            self._dict["init"] = init_config
         init_config["due_with_unfinished"] = self.due_with_unfinished
         init_config["alert_days"] = self.alert_days
         if self.name == "SYSTEM":
             init_config["archive_recurrence"] = self.archive_recurrence
+        return init_config
 
-        # Archive
-        if self.archive_recurrence and self.name == "SYSTEM":
-            if "archive" not in _dict:
-                self.script_configs.append({"name": "archive", "type": "archive"})
+    def _process_script_config(self, name: str, condition: bool, params: Optional[List[str]] = None):
+        if condition:
+            if name not in self._dict:
+                config = {"name": name, "type": name}
+                if params:
+                    config.update({param: self._init_config[param] for param in params})
+                self.script_configs.append(config)
+            elif params:
+                self._dict[name].update({param: self._init_config[param] for param in params})
         else:
-            if "archive" in _dict:
-                config = _dict.pop("archive")
-                self.script_configs.remove(config)
-
-        # Unfinished
-        if self.due_with_unfinished:
-            if "unfinished" not in _dict:
-                self.script_configs.append({"name": "unfinished", "type": "unfinished"})
-        else:
-            if "unfinished" in _dict:
-                config = _dict.pop("unfinished")
-                self.script_configs.remove(config)
-
-        # Alert
-        if self.alert_days:
-            if "alert" not in _dict:
-                self.script_configs.append({"name": "alert", "type": "alert", "days": init_config["alert_days"]})
-            else:
-                _dict["alert"]["days"] = init_config["alert_days"]
-        else:
-            if "alert" in _dict:
-                config = _dict.pop("alert")
+            if name in self._dict:
+                config = self._dict.pop(name)
                 self.script_configs.remove(config)
 
     def add_init_script(self, todotxt: TodoTxt):
