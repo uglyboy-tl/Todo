@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass, field
 
 from gotify import Gotify as Notify
@@ -18,7 +19,9 @@ class Gotify(BaseNotify):
 
     @staticmethod
     def _validate(id: str):
-        pass
+        pattern = re.compile(r"^A[a-zA-Z0-9.\-_]{14}$")
+        if not pattern.match(id):
+            raise ValueError("Invalid Gotify app token")
 
     def __call__(self, todo: TodoItem, process):
         self._client.create_message(
