@@ -30,13 +30,15 @@ class Webhook(BaseContext):
             request = urllib.request.Request(self.url, data=params, headers=HEADERS, method=self.method)
             with urllib.request.urlopen(request) as response:
                 content = response.read().decode("utf-8")
-            logger.success(f"请求成功，返回结果: {content}")
-            if self.save_data:
-                data = TodoItem(f"{content} @#{self.name}", completed=True, completion_date=datetime.now())
-                process(data, Option.FORMAT | Option.ADD)
-            notify = TodoItem(f"{self.name} 请求成功 @notify")
-            process(notify, Option.EXECUTE)
+            self._process(content, process)
         except urllib.error.URLError as e:
             logger.error(f"URL错误: {e.reason}")
         except Exception as e:
             logger.error(f"请求失败: {e}")
+
+    def _process(self, content: str, process):
+        if self.save_data:
+            data = TodoItem(content, completed=True, completion_date=datetime.now())
+            process(data, Option.FORMAT | Option.ADD)
+        notify = TodoItem(f"{self.name} 请求成功 @notify")
+        process(notify, Option.EXECUTE)
