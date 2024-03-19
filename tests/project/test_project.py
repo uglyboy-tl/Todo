@@ -5,7 +5,7 @@ import yaml
 
 from todo.core import TodoItem, TodoTxt
 from todo.project import BaseContext, Option, Project
-from todo.project.project import SYSTEM_SCRIPTS
+from todo.project.config import SYSTEM_SCRIPTS
 
 TODAY = time.strftime("%Y-%m-%d")
 
