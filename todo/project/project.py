@@ -1,27 +1,12 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Type
+from typing import List, Type
 
 from loguru import logger
 from stevedore import ExtensionManager
 
 from .base import BaseProject
-from .config import Config
+from .config import Config, merge_system_scripts
 from .context import BaseContext, BaseFilter
-
-SYSTEM_SCRIPTS = [
-    "done",
-    "update",
-    "time_filter",
-    "date_filter",
-    "weather_filter",
-    "weather",
-    "notify",
-]
-
-OPTION_SCRITPS = [
-    "weather",
-    "notify",
-]
 
 
 @dataclass
@@ -39,7 +24,7 @@ class Project(BaseProject):
             context_type_set = {context.name for context in context_plugins}
             context_private_type_set = {context.name for context in context_private_plugins}
 
-            for script in self.merge_system_scripts(self.config.script_configs):
+            for script in merge_system_scripts(self.config.script_configs):
                 assert "name" in script.keys()
                 if "type" not in script.keys():
                     script["type"] = script["name"]
@@ -65,21 +50,3 @@ class Project(BaseProject):
     def load(cls, file_path: str, name: str = "SYSTEM"):
         config: Config = Config.load(file_path, name)
         return cls(config)
-
-    @staticmethod
-    def merge_system_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        option_scripts = [script["name"] for script in script_configs if script["name"] in OPTION_SCRITPS]
-        if option_scripts:
-            merge_scripts = [
-                {"name": script, "type": script} for script in SYSTEM_SCRIPTS if script not in option_scripts
-            ]
-        else:
-            merge_scripts = [{"name": script, "type": script} for script in SYSTEM_SCRIPTS]
-        merge_scripts.extend(
-            [
-                script
-                for script in script_configs
-                if script["name"] not in SYSTEM_SCRIPTS or script["name"] in OPTION_SCRITPS
-            ]
-        )
-        return merge_scripts
