@@ -21,8 +21,8 @@ class WebHook(BaseContext):
             if self.save_data:
                 data = TodoItem(f"{content} @#{self.name}", completed=True, completion_date=datetime.now())
                 process(data, Option.FORMAT | Option.ADD)
-            notify = TodoItem(f"{self.name} 请求成功 @notify @done")
-            process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
+            notify = TodoItem(f"{self.name} 请求成功 @notify")
+            process(notify, Option.EXECUTE)
         except error.URLError as e:
             logger.error(f"URL错误: {e.reason}")
         except Exception as e:

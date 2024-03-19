@@ -47,7 +47,7 @@ class IMAP(BaseContext):
             email_message = email.message_from_bytes(raw_email)
 
             notify = TodoItem(f"{self.name} 收到来自 {email_message['From']} 的邮件 @notify @done")
-            process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
+            process(notify, Option.EXECUTE)
         elif num > 1:
             notify = TodoItem(f"{self.name} 收到 {num} 封邮件 @notify @done")
-            process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
+            process(notify, Option.EXECUTE)

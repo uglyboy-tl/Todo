@@ -15,11 +15,11 @@ class Shell(BaseContext):
         try:
             result = subprocess.run(self.command, shell=True, capture_output=True, text=True)
             if result.returncode == 0:
-                notify = TodoItem(f"{self.name} 执行成功 @notify @done")
+                notify = TodoItem(f"{self.name} 执行成功 @notify")
                 logger.success(f"执行成功: {result.stdout}")
             else:
-                notify = TodoItem(f"{self.name} 执行失败 @notify @done")
+                notify = TodoItem(f"{self.name} 执行失败 @notify")
                 logger.error(f"执行失败: {result.stderr}")
-            process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
+            process(notify, Option.EXECUTE)
         except Exception as e:
             logger.error(f"执行失败: {e}")
