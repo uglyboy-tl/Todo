@@ -1,9 +1,10 @@
 import json
+import urllib
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
-from urllib import error, request
 
+# from urllib import error, request
 from loguru import logger
 
 from todo.core import TodoItem
@@ -30,14 +31,16 @@ class DateFilter(BaseFilter):
             return False
         if not data:
             try:
-                url = request.Request(HOLIDAY_URL.format(datetime.now().strftime("%Y-%m-%d")), headers=HEADERS)
-                with request.urlopen(url) as response:
+                request = urllib.request.Request(
+                    HOLIDAY_URL.format(datetime.now().strftime("%Y-%m-%d")), headers=HEADERS
+                )
+                with urllib.request.urlopen(request) as response:
                     data = response.read().decode("utf-8")
                     logger.trace(f"请求成功: {data}")
                     holiday_data = TodoItem(f"{data} @#holiday @#HIDDEN")
                     holiday_data.done()
                     process(holiday_data, Option.FORMAT | Option.ADD)
-            except error.URLError as e:
+            except urllib.error.URLError as e:
                 logger.error(f"URL错误: {e.reason}")
                 return False
             except Exception as e:
