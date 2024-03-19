@@ -19,7 +19,6 @@ SYSTEM_SCRIPTS = [
 ]
 
 OPTION_SCRITPS = [
-    "alert",
     "weather",
     "notify",
 ]

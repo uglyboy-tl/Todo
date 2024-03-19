@@ -6,17 +6,13 @@ from .system import (
     DateFilter,
     Done,
     DueUnfinished,
-    Init,
     Shell,
-    SysInit,
     TimeFilter,
     Update,
     WeatherFilter,
 )
 
 __all__ = [
-    "Init",
-    "SysInit",
     "Done",
     "Archive",
     "Update",

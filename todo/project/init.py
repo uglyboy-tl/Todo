@@ -4,7 +4,9 @@ from datetime import datetime
 from typing import Optional
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, Option
+
+from .context import BaseContext
+from .schema import Option
 
 
 @dataclass
