@@ -10,6 +10,7 @@ from todo.project import BaseContext, Option
 @dataclass
 class Init(BaseContext):
     due_with_unfinished: bool = False
+    alert_days: int = 0
 
     def __call__(self, todo: TodoItem, process):
         if self.name in todo.context:
@@ -32,6 +33,22 @@ class Init(BaseContext):
             due_script = self._fetch("unfinished", todotxt, process)
             if due_script:
                 process(due_script, Option.REMOVE)
+
+        # 代办提醒脚本
+        if self.alert_days:
+            if not self._check("alert", todotxt):
+                alert_script = self._fetch("alert", todotxt, process)
+                if alert_script and alert_script.due.date() != datetime.now().date():
+                    alert_script.due = datetime.now()
+                    process(alert_script, Option.EXECUTE)
+                elif not alert_script:
+                    alert_script = TodoItem("@alert @done @#HIDDEN", due=datetime.now())
+                    process(alert_script, Option.FORMAT | Option.ADD | Option.EXECUTE)
+                alert_script.recurrence = "1d"
+        else:
+            alert_script = self._fetch("alert", todotxt, process)
+            if alert_script:
+                process(alert_script, Option.REMOVE)
 
     # 检查脚本是否已经执行过
     def _check(self, script: str, todotxt: TodoTxt) -> bool:
