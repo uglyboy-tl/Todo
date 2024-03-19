@@ -217,7 +217,7 @@ class TodoTxt:
 
     @property
     def output(self):
-        return "\n".join([str(todo) for todo in self.sort() if "SYSTEM" not in todo.project and not todo.completed])
+        return "\n".join([str(todo) for todo in self.sort() if "#HIDDEN" not in todo.context and not todo.completed])
 
 
 def open_todotxt(file_path: str = "data/todo.txt") -> TodoTxt:

@@ -37,7 +37,7 @@ class DateFilter(BaseFilter):
                 with request.urlopen(url) as response:
                     data = response.read().decode("utf-8")
                     logger.trace(f"请求成功: {data}")
-                    holiday_data = TodoItem(f"{data} @#holiday +SYSTEM")
+                    holiday_data = TodoItem(f"{data} @#holiday @#HIDDEN")
                     holiday_data.done()
                     process(holiday_data, Option.FORMAT | Option.ADD)
             except error.URLError as e:

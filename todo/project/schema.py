@@ -66,7 +66,9 @@ class Config(BaseModel):
             need_to_remove = todotxt.search(self.start_script).copy()
             for todo in need_to_remove:
                 todotxt.remove(todo)
-            todotxt.append(TodoItem(f"@{self.start_script} +{self.name}", priority="A", due=datetime.now()), head=True)
+            todotxt.append(
+                TodoItem(f"@{self.start_script} @#HIDDEN +{self.name}", priority="A", due=datetime.now()), head=True
+            )
 
     def format_todo(self, todo: TodoItem):
         if self.name not in todo.project and self.name != "SYSTEM":

@@ -24,7 +24,7 @@ class Init(BaseContext):
                     due_script.due = datetime.now()
                     process(due_script, Option.EXECUTE)
                 elif not due_script:
-                    due_script = TodoItem("@unfinished @done +SYSTEM", due=datetime.now())
+                    due_script = TodoItem("@unfinished @done @#HIDDEN", due=datetime.now())
                     process(due_script, Option.FORMAT | Option.ADD | Option.EXECUTE)
                 due_script.recurrence = "1d"
                 due_script.priority = "A"
@@ -71,7 +71,7 @@ class SysInit(Init):
                 archive_script.recurrence = self.archive_recurrence
             else:
                 archive_script = TodoItem(
-                    "@archive @done +SYSTEM", priority="A", recurrence=self.archive_recurrence, due=datetime.now()
+                    "@archive @done @#HIDDEN", priority="A", recurrence=self.archive_recurrence, due=datetime.now()
                 )
                 process(archive_script, Option.FORMAT | Option.ADD | Option.EXECUTE)
         else:
