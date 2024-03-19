@@ -16,11 +16,14 @@ class BaseContext(metaclass=ABCMeta):
 
     @abstractmethod
     def __call__(
-        self, todo: TodoItem, process: Callable[[TodoItem, int], Union[TodoItem, List[TodoItem]]] = lambda x: x
+        self, todo: TodoItem, process: Callable[[TodoItem, int], Union[TodoItem, List[TodoItem]]] = lambda x, _: x
     ):
         pass
 
     def modify_all(
-        self, todo: TodoItem, todotxt, process: Callable[[TodoItem, int], Union[TodoItem, List[TodoItem]]] = lambda x: x
+        self,
+        todo: TodoItem,
+        todotxt,
+        process: Callable[[TodoItem, int], Union[TodoItem, List[TodoItem]]] = lambda x, _: x,
     ):
         return

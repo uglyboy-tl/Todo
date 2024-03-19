@@ -18,7 +18,7 @@ class Init(BaseContext):
         if self.name in todo.context:
             process(todo, Option.MODIFY_ALL)
 
-    def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
+    def modify_all(self, _: TodoItem, todotxt: TodoTxt, process):
         # 优先级A的未完成任务执行脚本
         if self.due_with_unfinished:
             if not self._check("unfinished", todotxt):
@@ -79,7 +79,7 @@ class Init(BaseContext):
 class SysInit(Init):
     archive_recurrence: str = ""
 
-    def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
+    def modify_all(self, _: TodoItem, todotxt: TodoTxt, process):
         # 优先级A的归档脚本
         if self.archive_recurrence:
             pattern = re.compile(r"\d+[dwmy]")
@@ -97,4 +97,4 @@ class SysInit(Init):
             archive_script = self._fetch("archive", todotxt, process)
             if archive_script:
                 process(archive_script, Option.FORMAT | Option.REMOVE)
-        super().modify_all(todo, todotxt, process)
+        super().modify_all(_, todotxt, process)
