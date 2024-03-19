@@ -9,7 +9,6 @@ class BaseNotify(BaseContext, metaclass=ABCMeta):
     id: str
 
     def __post_init__(self):
-        super().__post_init__()
         self._validate(self.id)
 
     @staticmethod
