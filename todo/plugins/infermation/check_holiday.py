@@ -12,7 +12,7 @@ HOLIDAY_URL = "https://timor.tech/api/holiday/info/{}"
 
 
 @dataclass
-class Holiday(Webhook):
+class CheckHoliday(Webhook):
     url: str = HOLIDAY_URL
     language: str = "zh"
     location: Optional[str] = None
@@ -23,8 +23,12 @@ class Holiday(Webhook):
 
     def _process(self, content: str, process):
         data = json.loads(content)
+        if data.get("holiday") and isinstance(data["holiday"], dict):
+            name = data["holiday"].get("name", "")
+        else:
+            name = ""
         obj = {
-            "name": data.get("holiday", {}).get("name", ""),
+            "name": name,
             "type": data["type"]["type"],
         }
 
