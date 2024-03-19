@@ -1,7 +1,7 @@
 import re
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass, field
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 
 from todo.core import TodoItem
 
@@ -26,8 +26,12 @@ class BaseContext(metaclass=ABCMeta):
         return False
 
     @abstractmethod
-    def __call__(self, todo: TodoItem, process: Callable[[TodoItem, int], TodoItem] = lambda x: x):
+    def __call__(
+        self, todo: TodoItem, process: Callable[[TodoItem, int], Union[TodoItem, List[TodoItem]]] = lambda x: x
+    ):
         pass
 
-    def modify_all(self, todo: TodoItem, todotxt, process: Callable[[TodoItem, int], TodoItem] = lambda x: x):
+    def modify_all(
+        self, todo: TodoItem, todotxt, process: Callable[[TodoItem, int], Union[TodoItem, List[TodoItem]]] = lambda x: x
+    ):
         return

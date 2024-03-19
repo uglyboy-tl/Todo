@@ -43,7 +43,6 @@ class Project:
                 namespace=f"todo.project.{self.name}", invoke_on_load=False
             )
 
-            # context_plugins.extend(list(ExtensionManager(namespace=f"todo.project.{config.name}", invoke_on_load=False)))
             context_type_set = {context.name for context in context_plugins}
             context_private_type_set = {context.name for context in context_private_plugins}
 
@@ -75,9 +74,14 @@ class Project:
         logger.trace(f"TodoList:\n{todolist}")
         todolist = todolist.todo_list
 
-        def process(todo: TodoItem, type: Union[Parameter, int] = 1) -> TodoItem:
+        def process(todo: TodoItem, type: Union[Parameter, int] = 1) -> Union[TodoItem, List[TodoItem]]:
             if isinstance(type, int):
                 type = Parameter(type)
+            if type == Option.SEARCH:
+                assert len(todo.context) == 1
+                query = todo.context[0]
+                assert query.startswith("#")
+                return todolist.search(query)
             if type == Option.FORMAT:
                 todo = self._format_todo(todo)
             if type == Option.ADD:
