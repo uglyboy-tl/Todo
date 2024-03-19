@@ -21,14 +21,6 @@ class Email(BaseNotify):
         super().__post_init__()
         self._smtp = smtplib.SMTP_SSL(self.smtp, self.port)
 
-    @staticmethod
-    def _validate(id: str):
-        pattern = re.compile(
-            r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
-        )
-        if not pattern.match(id):
-            raise ValueError("Invalid email address")
-
     def __call__(self, todo: TodoItem, process):
         msg = MIMEText(f"{str(todo)}", "plain", "utf-8")
         msg["Subject"] = "[代办提醒]" + todo.message
@@ -39,3 +31,11 @@ class Email(BaseNotify):
         self._smtp.login(self.email, self.password)
         self._smtp.sendmail(self.email, self.id, msg.as_string())
         self._smtp.quit()
+
+    @staticmethod
+    def _validate(id: str):
+        pattern = re.compile(
+            r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+        )
+        if not pattern.match(id):
+            raise ValueError("Invalid email address")

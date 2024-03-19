@@ -17,14 +17,14 @@ class Gotify(BaseNotify):
         super().__post_init__()
         self._client = Notify(base_url=self.url, app_token=self.id)
 
-    @staticmethod
-    def _validate(id: str):
-        pattern = re.compile(r"^A[a-zA-Z0-9.\-_]{14}$")
-        if not pattern.match(id):
-            raise ValueError("Invalid Gotify app token")
-
     def __call__(self, todo: TodoItem, process):
         self._client.create_message(
             todo.message,
             title="消息提醒",
         )
+
+    @staticmethod
+    def _validate(id: str):
+        pattern = re.compile(r"^A[a-zA-Z0-9.\-_]{14}$")
+        if not pattern.match(id):
+            raise ValueError("Invalid Gotify app token")

@@ -10,9 +10,9 @@ from todo.project import BaseNotify
 class Notify(BaseNotify):
     id: str = "Notify"
 
+    def __call__(self, todo: TodoItem, process):
+        logger.info(f"{self.id}: {todo.message}")
+
     @staticmethod
     def _validate(id: str):
         pass
-
-    def __call__(self, todo: TodoItem, process):
-        logger.info(f"{self.id}: {todo.message}")
