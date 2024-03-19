@@ -71,6 +71,7 @@ class Project:
     def __call__(self, todotxt: TodoTxt):
         self._add_init_script(todotxt)
         todolist = todotxt[self.name].alert().sort()
+        logger.info(f"Start Project: {self.name}")
         logger.trace(f"TodoList:\n{todolist}")
         todolist = todolist.todo_list
 
@@ -111,6 +112,8 @@ class Project:
                 todo.context.remove("#break")
             if "#all" in todo.context:
                 todo.context.remove("#all")
+            if "#archive" in todo.context:
+                todo.context.remove("#archive")
             for script in self.scripts:
                 if script.match(todo.context):
                     script(todo, process)
