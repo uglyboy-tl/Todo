@@ -1,3 +1,4 @@
+from .alert import Alert
 from .archive import Archive
 from .done import Done
 from .filter import DateFilter, TimeFilter, WeatherFilter
@@ -14,6 +15,7 @@ __all__ = [
     "Archive",
     "Update",
     "DueUnfinished",
+    "Alert",
     "TimeFilter",
     "DateFilter",
     "WeatherFilter",

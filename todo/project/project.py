@@ -13,6 +13,7 @@ SYSTEM_SCRIPTS = [
     "done",
     "update",
     "unfinished",
+    "alert",
     "time_filter",
     "date_filter",
     "weather_filter",
@@ -21,6 +22,7 @@ SYSTEM_SCRIPTS = [
 ]
 
 OPTION_SCRITPS = [
+    "alert",
     "weather",
     "notify",
 ]
