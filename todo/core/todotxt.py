@@ -27,10 +27,6 @@ class TodoTxt:
             self._init = True
 
     def append(self, todo: TodoItem, head: bool = False):
-        if head:
-            self.todo_list.insert(0, todo)
-        else:
-            self.todo_list.append(todo)
         for context in todo.context:
             if context not in self.dict:
                 self.dict[context] = []
@@ -38,15 +34,19 @@ class TodoTxt:
                 self.dict[context].append(todo)
             elif not todo.completed:
                 self.dict[context].append(todo)
+        if head:
+            self.todo_list.insert(0, todo)
+        else:
+            self.todo_list.append(todo)
 
     def remove(self, todo: TodoItem):
-        self.todo_list.remove(todo)
         for context in todo.context:
             if context in self.dict and todo in self.dict[context]:
                 if context.startswith("#"):
                     self.dict[context].remove(todo)
                 elif not todo.completed:
                     self.dict[context].remove(todo)
+        self.todo_list.remove(todo)
 
     @overload
     def done(self, todo: int):
@@ -63,10 +63,10 @@ class TodoTxt:
             assert todo in self
         if todo.completed:
             return
-        todo.done()
         for context in todo.context:
             if context in self.dict and not context.startswith("#") and todo in self.dict[context]:
                 self.dict[context].remove(todo)
+        todo.done()
         if todo.recurrence:
             description = todo.description
             if todo.recurrence.endswith("d"):
@@ -100,9 +100,9 @@ class TodoTxt:
             for todo in self.todo_list:
                 if todo.completed:
                     file.write(str(todo) + "\n")
-        self.todo_list = [todo for todo in self.todo_list if not todo.completed]
         for context in self.dict:
             self._dict[context] = [todo for todo in self.dict[context] if not todo.completed]
+        self.todo_list = [todo for todo in self.todo_list if not todo.completed]
 
     def sort(self) -> "TodoTxt":
         self.todo_list = sorted(

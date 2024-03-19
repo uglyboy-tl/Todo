@@ -15,6 +15,10 @@ class BaseProject:
     name: str = ""
     scripts: List[BaseContext] = field(default_factory=list)
 
+    def __post_init__(self):
+        if self.name and not self.config.name:
+            self.config.name = self.name
+
     def __call__(self, todotxt: TodoTxt):
         self._add_init_script(todotxt)
         todolist = todotxt[self.name].alert().sort()

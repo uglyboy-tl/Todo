@@ -28,6 +28,7 @@ OPTION_SCRITPS = [
 @dataclass
 class Project(BaseProject):
     def __post_init__(self):
+        super().__post_init__()
         if self.config and not self.name:
             self.name = self.config.name
         if self.config and not self.scripts:
