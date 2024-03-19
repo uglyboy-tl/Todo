@@ -1,4 +1,4 @@
-from .infermation import IMAP, Weather, Webhook
+from .infermation import IMAP, Holiday, Weather, Webhook
 from .notify import Email, Gotify, Notify
 from .system import (
     Alert,
@@ -27,5 +27,6 @@ __all__ = [
     "Shell",
     "IMAP",
     "Weather",
+    "Holiday",
     "Webhook",
 ]
