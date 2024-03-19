@@ -8,7 +8,7 @@ from todo.project import BaseContext, Option
 
 
 @dataclass
-class BaseInit(BaseContext):
+class Init(BaseContext):
     due_with_unfinished: bool = False
 
     def __call__(self, todo: TodoItem, process):
@@ -57,7 +57,7 @@ class BaseInit(BaseContext):
 
 
 @dataclass
-class Init(BaseInit):
+class SysInit(Init):
     archive_recurrence: str = ""
 
     def modify_all(self, todo: TodoItem, todotxt: TodoTxt, process):
