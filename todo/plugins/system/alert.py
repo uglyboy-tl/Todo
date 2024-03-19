@@ -23,5 +23,5 @@ class Alert(BaseContext):
             ):
                 if todo.message and "#HIDDEN" not in todo.context:
                     diff = todo.due.date() - datetime.now().date()
-                    notify = TodoItem(f"距离：`{todo.message}` 还有{diff.days}天 @notify")
+                    notify = TodoItem(f"距离：`{todo.message.strip()}` 还有{diff.days}天 @notify")
                     process(notify, Option.EXECUTE)
