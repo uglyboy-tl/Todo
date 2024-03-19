@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import yaml
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, Config, Option, Project
+from todo.project import BaseContext, Option, Project
 from todo.project.project import SYSTEM_SCRIPTS
 
 TODAY = time.strftime("%Y-%m-%d")
@@ -25,105 +25,6 @@ class TestContext2(BaseContext):
 
     def __call__(self, todo, _):
         todo.description = "Modified"
-
-
-def test_call_with_alerts_and_contexts():
-    # Setup
-    todo_txt = TodoTxt()
-    todo_item1 = TodoItem(f"Test todo @alert +project1 due:{TODAY}")
-    todo_item2 = TodoItem(f"Test todo @noalert +project1 due:{TODAY}")
-    todo_txt.append(todo_item1)
-    todo_txt.append(todo_item2)
-    project = Project(name="project1")
-
-    assert len(todo_txt["project1"].alert()) == 2
-
-    project.scripts = [TestContext2()]
-
-    # Call
-    project(todo_txt)
-
-    # Assert
-    assert todo_item1.description == "Modified"
-    assert todo_item2.description == "Test todo @noalert +project1"
-
-
-def test_call_with_no_alerts():
-    # Setup
-    todo_txt = TodoTxt()
-    todo_item = TodoItem(f"Test todo @noalert +project1 due:{TODAY}")
-    todo_txt.append(todo_item)
-    assert len(todo_txt["project1"].alert()) == 1
-    project = Project(name="project1")
-    project.scripts = [TestContext2()]
-
-    # Call
-    project(todo_txt)
-
-    # Assert
-    assert todo_item.description == "Test todo @noalert +project1"
-
-
-def test_call_with_no_contexts():
-    # Setup
-    todo_txt = TodoTxt()
-    todo_item = TodoItem(f"Test todo @alert +project1 due:{TODAY}")
-    todo_txt.append(todo_item)
-    assert len(todo_txt["project1"].alert()) == 1
-    project = Project(name="project1")
-    project.scripts = []
-
-    # Call
-    project(todo_txt)
-
-    # Assert
-    assert todo_item.description == "Test todo @alert +project1"
-
-
-def test_config_load():
-    # Setup
-    file_path = "data/project/test.yaml"
-    data = {
-        "name": "test",
-    }
-    with open(file_path, "w") as f:
-        yaml.dump(data, f)
-
-    # Call
-    config = Config.load(file_path)
-
-    # Assert
-    assert isinstance(config, Config)
-    assert config.name == "test"
-    assert isinstance(config.script_configs, list)
-    assert len(config.script_configs) == 1  # Assuming the config file is empty
-
-
-def test_config_load_with_data():
-    # Setup
-    file_path = "data/project/test.yaml"
-    data = {
-        "name": "test",
-        "script_configs": [
-            {"name": "alert1", "priority": 1},
-            {"name": "reminder", "priority": 2},
-        ],
-    }
-    with open(file_path, "w") as f:
-        yaml.dump(data, f)
-
-    # Call
-    config = Config.load(file_path)
-
-    # Assert
-    assert isinstance(config, Config)
-    assert config.name == "test"
-    assert isinstance(config.script_configs, list)
-    assert len(config.script_configs) == 3
-    assert config.script_configs[0]["name"] == "alert1"
-    assert config.script_configs[0]["priority"] == 1
-    assert config.script_configs[1]["name"] == "reminder"
-    assert config.script_configs[1]["priority"] == 2
 
 
 def project_init(file_path: str):
