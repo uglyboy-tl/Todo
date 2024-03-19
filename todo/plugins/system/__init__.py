@@ -6,7 +6,6 @@ from .init import Init, SysInit
 from .shell import Shell
 from .unfinished import DueUnfinished
 from .update import Update
-from .weather import Weather
 
 __all__ = [
     "Init",
@@ -19,6 +18,5 @@ __all__ = [
     "TimeFilter",
     "DateFilter",
     "WeatherFilter",
-    "Weather",
     "Shell",
 ]

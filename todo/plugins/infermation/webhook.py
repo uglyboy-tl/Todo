@@ -9,7 +9,7 @@ from todo.project import BaseContext, Option
 
 
 @dataclass
-class WebHook(BaseContext):
+class Webhook(BaseContext):
     url: str
     save_data: bool = False
 
