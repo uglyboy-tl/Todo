@@ -34,7 +34,7 @@ def test_call_with_alerts_and_contexts():
     todo_item2 = TodoItem(f"Test todo @noalert +project1 due:{TODAY}")
     todo_txt.append(todo_item1)
     todo_txt.append(todo_item2)
-    project = Project("project1")
+    project = Project(name="project1")
 
     assert len(todo_txt["project1"].alert()) == 2
 
@@ -54,7 +54,7 @@ def test_call_with_no_alerts():
     todo_item = TodoItem(f"Test todo @noalert +project1 due:{TODAY}")
     todo_txt.append(todo_item)
     assert len(todo_txt["project1"].alert()) == 1
-    project = Project("project1")
+    project = Project(name="project1")
     project.scripts = [TestContext2()]
 
     # Call
@@ -70,7 +70,7 @@ def test_call_with_no_contexts():
     todo_item = TodoItem(f"Test todo @alert +project1 due:{TODAY}")
     todo_txt.append(todo_item)
     assert len(todo_txt["project1"].alert()) == 1
-    project = Project("project1")
+    project = Project(name="project1")
     project.scripts = []
 
     # Call
@@ -157,6 +157,7 @@ def test_project_load():
     todo_txt2 = TodoTxt(todo_list=[])
     todo_item = TodoItem(f"Test todo @addone +test due:{TODAY}")
     todo_txt2.append(todo_item)
+    project(todo_txt2)
     assert len(todo_txt2) == 2
     assert todo_txt2[0].completed is True
     assert todo_txt2[1].description == "Test New todo +test"
@@ -170,8 +171,8 @@ def test_project_load_contexts():
     project = Project.load(file_path, "test")
     assert len(project.scripts) == 2 + len(SYSTEM_SCRIPTS)
     print(project.scripts)
-    reminder = project.scripts[len(SYSTEM_SCRIPTS)-3]
-    alert = project.scripts[len(SYSTEM_SCRIPTS) -2]
+    reminder = project.scripts[len(SYSTEM_SCRIPTS) - 3]
+    alert = project.scripts[len(SYSTEM_SCRIPTS) - 2]
 
     assert reminder.name == "addone"
     assert alert.name == "test2"
