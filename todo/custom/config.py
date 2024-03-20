@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 from todo.core import TodoItem
 from todo.project.schema import BaseConfig
 
+# 相当于 context 的保留字段
 PRESET_SCRIPTS = [
     "done",
     "update",
@@ -14,6 +15,7 @@ PRESET_SCRIPTS = [
     "notify",
 ]
 
+# 可配置的保留字段
 OPTION_SCRITPS = [
     "fetch_weather",
     "notify",
