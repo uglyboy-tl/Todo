@@ -34,7 +34,7 @@ class BaseProject:
                 query = todo.context[0]
                 return todotxt.search(query)
             if type == Option.FORMAT:
-                todo = self._format_todo(todo, self.name == todotxt._root_project)
+                todo = self._format_todo(todo, self.name == todotxt.root_project)
             if type == Option.ADD:
                 todotxt.append(todo)
                 logger.trace(f"Append todo: {todo}")
@@ -82,8 +82,8 @@ class BaseProject:
                         break
             index += 1
 
-    def _format_todo(self, todo: TodoItem, is_system: bool):
-        return self.config.format_todo(todo, is_system)
+    def _format_todo(self, todo: TodoItem, disable_project_name: bool):
+        return self.config.format_todo(todo, disable_project_name)
 
     def _add_init_script(self, todotxt: TodoTxt):
         self.config.add_init_script(todotxt)

@@ -18,7 +18,7 @@ class TodoTxt:
     _init: bool = field(init=False, default=False)
     _dict: Dict[str, List[TodoItem]] = field(init=False, default_factory=dict)
     _completed_dict: Dict[str, List[TodoItem]] = field(init=False, default_factory=dict)
-    _root_project: str = field(init=False, default="SYSTEM")
+    root_project: str = field(init=False, default="SYSTEM")
 
     def __post_init__(self):
         self._path = Path(self.file_path)
@@ -171,10 +171,10 @@ class TodoTxt:
         if isinstance(index, int):
             return self.todo_list[index]
         elif isinstance(index, str):
-            if index == self._root_project:
+            if index == self.root_project:
                 return TodoTxt(
                     todo_list=[
-                        todo for todo in self.todo_list if not todo.project or self._root_project in todo.project
+                        todo for todo in self.todo_list if not todo.project or self.root_project in todo.project
                     ],
                     read_only=True,
                 )
