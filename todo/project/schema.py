@@ -4,7 +4,8 @@ from typing import Any, Dict, List, Optional, Union
 
 import yaml
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
+from typing_extensions import Self
 
 from todo.core import TodoItem, TodoTxt
 
@@ -60,8 +61,10 @@ class BaseConfig(BaseModel):
     start_script: Optional[str] = None
     script_configs: List[Dict[str, Any]] = []
 
-    def model_post_init(self, __context: Any):
+    @model_validator(mode="after")
+    def verify_config(self) -> Self:
         self._get_init_config()
+        return self
 
     def _get_init_config(self):
         if not self.start_script:
