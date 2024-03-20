@@ -29,15 +29,15 @@ class BaseFilter(BaseContext, metaclass=ABCMeta):
         return False
 
     def __call__(self, todo: TodoItem, process):
-        matched_context = None
+        matched_contexts = []
         for context in todo.context:
             if self.pattern.match(context):
-                matched_context = context
-        if not matched_context:
+                matched_contexts.append(context)
+        if not matched_contexts:
             return
         data = self._get_data(self.data_name, process)
         if data is not None:
-            if not self._check(data, matched_context):
+            if not any(self._check(data, context) for context in matched_contexts):
                 process(todo, Option.BREAK)
         else:
             if self._no_getdata_todo(self.script_name, process):
