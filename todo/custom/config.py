@@ -1,8 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from todo.core import TodoItem
-
-from .schema import BaseConfig
+from todo.project.schema import BaseConfig
 
 PRESET_SCRIPTS = [
     "done",

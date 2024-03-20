@@ -4,8 +4,8 @@ from dataclasses import dataclass
 import yaml
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, BaseNotify, Config, Option, Project
-from todo.project.config import PRESET_SCRIPTS
+from todo.custom.config import PRESET_SCRIPTS, Config
+from todo.project import BaseContext, BaseNotify, Option, Project
 
 TODAY = time.strftime("%Y-%m-%d")
 

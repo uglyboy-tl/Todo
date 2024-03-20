@@ -74,7 +74,7 @@ def test_base_config_add_init_script():
 
     # Call
     config.add_init_script(todotxt)
-    formatted_todo = config.format_todo(todo)
+    formatted_todo = config.format_todo(todo, False)
 
     # Assert
     assert len(todotxt.todo_list) == 1

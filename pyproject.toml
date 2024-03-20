@@ -19,7 +19,7 @@ gotify = "^0.6.0"
 pytest = "^8.0.2"
 
 [tool.poetry.plugins."todo.project"]
-init = "todo.project:Init"
+init = "todo.custom:Init"
 done = "todo.plugins:Done"
 update = "todo.plugins:Update"
 unfinished = "todo.plugins:DueUnfinished"
@@ -36,7 +36,7 @@ gotify = "todo.plugins:Gotify"
 email = "todo.plugins:Email"
 
 [tool.poetry.plugins."todo.project.SYSTEM"]
-sysinit = "todo.project:SysInit"
+sysinit = "todo.custom:SysInit"
 archive = "todo.plugins:Archive"
 shell = "todo.plugins:Shell"
 

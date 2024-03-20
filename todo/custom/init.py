@@ -2,9 +2,7 @@ import re
 from dataclasses import dataclass
 
 from todo.core import TodoItem, TodoTxt
-
-from .context import BaseInit
-from .schema import Option
+from todo.project import BaseInit, Option
 
 
 @dataclass
