@@ -41,7 +41,7 @@ class BaseFilter(BaseContext, metaclass=ABCMeta):
                 process(todo, Option.BREAK)
         else:
             if self._no_getdata_todo(self.script_name, process):
-                getdata_todo = TodoItem(f"@{self.script_name} @done @#HIDDEN +SYSTEM")
+                getdata_todo = TodoItem(f"@{self.script_name} @done @#HIDDEN")
                 process(getdata_todo, Option.ADD | Option.EXECUTE)
             process(todo, Option.BREAK)
             process(todo, Option.EXECUTE)
