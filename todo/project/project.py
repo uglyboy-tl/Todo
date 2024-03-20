@@ -5,7 +5,6 @@ from loguru import logger
 from stevedore import ExtensionManager
 
 from .base import BaseProject
-from .config import Config, merge_system_scripts
 from .context import BaseContext, BaseFilter, BaseNotify
 
 
@@ -24,7 +23,7 @@ class Project(BaseProject):
             context_type_set = {context.name for context in context_plugins}
             context_private_type_set = {context.name for context in context_private_plugins}
 
-            for script in merge_system_scripts(self.config.script_configs):
+            for script in self.config.merge_preset_scripts(self.config.script_configs):
                 assert "name" in script.keys()
                 if "type" not in script.keys():
                     script["type"] = script["name"]
@@ -39,14 +38,9 @@ class Project(BaseProject):
             self.scripts.sort(
                 key=lambda x: 2
                 if isinstance(x, BaseFilter)
-                else 1
-                if x.name not in ["done", "update"] or isinstance(x, BaseNotify)
-                else 0,
+                else 0
+                if x.name in ["done", "update"] or isinstance(x, BaseNotify)
+                else 1,
                 reverse=True,
             )
             logger.trace(f"Project:{self.name}\nScripts: {[script.name for script in self.scripts]}")
-
-    @classmethod
-    def load(cls, file_path: str, name: str = "SYSTEM"):
-        config: Config = Config.load(file_path, name)
-        return cls(config)

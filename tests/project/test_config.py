@@ -4,8 +4,8 @@ from dataclasses import dataclass
 import yaml
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, Option, Project
-from todo.project.config import SYSTEM_SCRIPTS
+from todo.project import BaseContext, BaseNotify, Config, Option, Project
+from todo.project.config import PRESET_SCRIPTS
 
 TODAY = time.strftime("%Y-%m-%d")
 
@@ -42,13 +42,14 @@ def project_init(file_path: str):
         yaml.dump(data, f)
 
 
-def test_project_load():
+def test_config_load():
     # Setup
     file_path = "tests/data/test.yaml"
     project_init(file_path)
-    project = Project.load(file_path, "test")
+    config = Config.load(file_path, "test")
+    project = Project(config)
     print(project.scripts)
-    assert len(project.scripts) == 3 + len(SYSTEM_SCRIPTS)
+    assert len(project.scripts) == 3 + len(PRESET_SCRIPTS)
 
     # Call
     todo_txt1 = TodoTxt(todo_list=[])
@@ -66,16 +67,20 @@ def test_project_load():
     assert todo_txt2[2].description == "Test New todo +test"
 
 
-def test_project_load_contexts():
+def test_config_load_contexts():
     # Setup
     file_path = "tests/data/test.yaml"
     project_init(file_path)
     todo_txt = TodoTxt(todo_list=[])
-    project = Project.load(file_path, "test")
-    assert len(project.scripts) == 3 + len(SYSTEM_SCRIPTS)
+    config = Config.load(file_path, "test")
+    project = Project(config)
+    assert len(project.scripts) == 3 + len(PRESET_SCRIPTS)
     print(project.scripts)
-    reminder = project.scripts[len(SYSTEM_SCRIPTS) - 3]
-    alert = project.scripts[len(SYSTEM_SCRIPTS) - 2]
+    num = len(
+        [script for script in project.scripts if script.name in ["update", "done"] or isinstance(script, BaseNotify)]
+    )
+    reminder = project.scripts[len(PRESET_SCRIPTS) - num]
+    alert = project.scripts[len(PRESET_SCRIPTS) - num + 1]
 
     assert reminder.name == "addone"
     assert alert.name == "test2"

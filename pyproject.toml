@@ -41,8 +41,8 @@ archive = "todo.plugins:Archive"
 shell = "todo.plugins:Shell"
 
 [tool.poetry.plugins."todo.project.test"]
-test1 = "tests.project.test_project:TestContext1"
-test2 = "tests.project.test_project:TestContext2"
+test1 = "tests.project.test_config:TestContext1"
+test2 = "tests.project.test_config:TestContext2"
 
 [build-system]
 requires = ["poetry-core"]

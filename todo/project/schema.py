@@ -92,6 +92,10 @@ class BaseConfig(BaseModel):
             todo.add_project(self.name)
         return todo
 
+    @staticmethod
+    def merge_preset_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        return script_configs
+
     @classmethod
     def load(cls, file_path: str, name: str = ""):
         with open(file_path) as f:

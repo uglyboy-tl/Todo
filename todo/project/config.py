@@ -4,7 +4,7 @@ from todo.core import TodoItem
 
 from .schema import BaseConfig
 
-SYSTEM_SCRIPTS = [
+PRESET_SCRIPTS = [
     "done",
     "update",
     "time_filter",
@@ -19,22 +19,6 @@ OPTION_SCRITPS = [
     "weather",
     "notify",
 ]
-
-
-def merge_system_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    option_scripts = [script["name"] for script in script_configs if script["name"] in OPTION_SCRITPS]
-    if option_scripts:
-        merge_scripts = [{"name": script, "type": script} for script in SYSTEM_SCRIPTS if script not in option_scripts]
-    else:
-        merge_scripts = [{"name": script, "type": script} for script in SYSTEM_SCRIPTS]
-    merge_scripts.extend(
-        [
-            script
-            for script in script_configs
-            if script["name"] not in SYSTEM_SCRIPTS or script["name"] in OPTION_SCRITPS
-        ]
-    )
-    return merge_scripts
 
 
 class Config(BaseConfig):
@@ -74,3 +58,21 @@ class Config(BaseConfig):
     def format_todo(self, todo: TodoItem):
         todo = super().format_todo(todo)
         return todo
+
+    @staticmethod
+    def merge_preset_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        option_scripts = [script["name"] for script in script_configs if script["name"] in OPTION_SCRITPS]
+        if option_scripts:
+            merge_scripts = [
+                {"name": script, "type": script} for script in PRESET_SCRIPTS if script not in option_scripts
+            ]
+        else:
+            merge_scripts = [{"name": script, "type": script} for script in PRESET_SCRIPTS]
+        merge_scripts.extend(
+            [
+                script
+                for script in script_configs
+                if script["name"] not in PRESET_SCRIPTS or script["name"] in OPTION_SCRITPS
+            ]
+        )
+        return merge_scripts
