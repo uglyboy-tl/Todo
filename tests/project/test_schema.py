@@ -50,25 +50,6 @@ def test_config_load_with_data():
     assert config.script_configs[1]["priority"] == 2
 
 
-def test_base_config_model_post_init():
-    # Setup
-    config = BaseConfig(
-        name="test", script_configs=[{"name": "alert1", "priority": 1}, {"name": "reminder", "priority": 2}]
-    )
-
-    # Call
-    config.model_post_init(None)
-
-    # Assert
-    assert isinstance(config._dict, dict)
-    assert len(config._dict) == 3
-    assert "init" in config._dict
-    assert "alert1" in config._dict
-    assert "reminder" in config._dict
-    assert config._dict["alert1"]["priority"] == 1
-    assert config._dict["reminder"]["priority"] == 2
-
-
 def test_base_config_get_init_config():
     # Setup
     config = BaseConfig(
@@ -83,8 +64,6 @@ def test_base_config_get_init_config():
     assert init_config["name"] == "init"
     assert init_config["type"] == "init"
     assert len(config.script_configs) == 3
-    assert "init" in config._dict
-    assert config._dict["init"] == init_config
 
 
 def test_base_config_add_init_script():

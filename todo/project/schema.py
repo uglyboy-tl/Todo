@@ -57,38 +57,37 @@ class Parameter:
 
 class BaseConfig(BaseModel):
     name: str = ""
-    start_script: Optional[str] = None
+    start_script: Optional[str] = "init"
     script_configs: List[Dict[str, Any]] = []
 
     def model_post_init(self, __context: Any):
-        self._dict: [str, Dict[str, Any]] = {
-            item.get("type") if item.get("type") else item["name"]: item for item in self.script_configs
-        }
+        self._get_init_config()
 
-        self._init_config = self._get_init_config()
-
-    def _get_init_config(self):
-        init_list = [item for item in self.script_configs if item.get("name") == "init"]
+    def _get_init_config(self, is_system: bool = False):
+        init_list = [item for item in self.script_configs if item.get("name") == self.start_script]
         assert len(init_list) <= 1, f"Only one init script is allowed in {self.name}"
         if init_list:
             init_config = init_list[0]
         else:
-            if self.name == "SYSTEM":
-                init_config = {"name": "init", "type": "sysinit"}
+            if is_system:
+                init_config = {"name": f"{self.start_script}", "type": "sysinit"}
             else:
-                init_config = {"name": "init", "type": "init"}
+                init_config = {"name": f"{self.start_script}", "type": "init"}
             self.script_configs.append(init_config)
-            self._dict["init"] = init_config
         return init_config
 
     def add_init_script(self, todotxt: TodoTxt):
-        need_to_remove = todotxt.search("init").copy()
+        if not self.start_script:
+            return
+        need_to_remove = todotxt.search(self.start_script).copy()
         for todo in need_to_remove:
             todotxt.remove(todo)
-        todotxt.append(TodoItem(f"@init @#HIDDEN +{self.name}", priority="A", due=datetime.now()), head=True)
+        todotxt.append(
+            TodoItem(f"@{self.start_script} @#HIDDEN +{self.name}", priority="A", due=datetime.now()), head=True
+        )
 
-    def format_todo(self, todo: TodoItem):
-        if self.name not in todo.project and self.name != "SYSTEM":
+    def format_todo(self, todo: TodoItem, is_system: bool):
+        if self.name not in todo.project and not is_system:
             todo.add_project(self.name)
         return todo
 

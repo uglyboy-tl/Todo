@@ -42,11 +42,34 @@ def project_init(file_path: str):
         yaml.dump(data, f)
 
 
+def test_config_model_post_init():
+    # Setup
+    config = Config(
+        name="test", script_configs=[{"name": "alert1", "priority": 1}, {"name": "reminder", "priority": 2}]
+    )
+
+    # Call
+    config.model_post_init(None)
+
+    # Assert
+    assert isinstance(config._dict, dict)
+    assert len(config._dict) == 4
+    assert "init" in config._dict
+    assert "alert1" in config._dict
+    assert "reminder" in config._dict
+    assert "unfinished" in config._dict
+    assert config._dict["alert1"]["priority"] == 1
+    assert config._dict["reminder"]["priority"] == 2
+
+
 def test_config_load():
     # Setup
     file_path = "tests/data/test.yaml"
     project_init(file_path)
     config = Config.load(file_path, "test")
+    init_config = config._get_init_config()
+    assert "init" in config._dict
+    assert config._dict["init"] == init_config
     project = Project(config)
     print(project.scripts)
     assert len(project.scripts) == 3 + len(PRESET_SCRIPTS)
