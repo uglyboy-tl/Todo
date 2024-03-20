@@ -12,7 +12,7 @@ WEATHER_URL = "https://{}wttr.in/{}?format=j1"
 
 
 @dataclass
-class Weather(Webhook):
+class WeatherChecker(Webhook):
     url: str = WEATHER_URL
     language: str = "zh"
     location: Optional[str] = None
@@ -29,9 +29,9 @@ class Weather(Webhook):
         weather += f"气温：{data['weather'][0]['mintempC']}°C-{data['weather'][0]['maxtempC']}°C，现在温度：{data['current_condition'][0]['temp_C']}°C，风力：{data['current_condition'][0]['windspeedKmph']}km/h\n"
 
         if self.notify:
-            notify = TodoItem(f"{weather.strip()} @#weather @notify @done")
+            notify = TodoItem(f"{weather.strip()} @#Weather @notify @done")
             process(notify, Option.FORMAT | Option.ADD | Option.EXECUTE)
         else:
-            notify = TodoItem(f"{weather.strip()} @#weather @#HIDDEN")
+            notify = TodoItem(f"{weather.strip()} @#Weather @#HIDDEN")
             notify.done()
             process(notify, Option.FORMAT | Option.ADD)

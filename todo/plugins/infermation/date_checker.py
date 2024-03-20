@@ -12,7 +12,7 @@ HOLIDAY_URL = "https://timor.tech/api/holiday/info/{}"
 
 
 @dataclass
-class CheckHoliday(Webhook):
+class DateChecker(Webhook):
     url: str = HOLIDAY_URL
     language: str = "zh"
     location: Optional[str] = None
@@ -32,6 +32,6 @@ class CheckHoliday(Webhook):
             "type": data["type"]["type"],
         }
 
-        holiday_data = TodoItem(f"{json.dumps(obj)} @#holiday @#HIDDEN")
+        holiday_data = TodoItem(f"{json.dumps(obj)} @#Date @#HIDDEN")
         holiday_data.done()
         process(holiday_data, Option.FORMAT | Option.ADD)

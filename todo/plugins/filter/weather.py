@@ -7,8 +7,8 @@ from todo.project import BaseFilter
 @dataclass
 class WeatherFilter(BaseFilter):
     regex: str = r"^晴天|阴天$"
-    data_name: str = "#weather"
-    script_name: str = "weather"
+    data_name: str = "#Weather"
+    script_name: str = "check_weather"
 
     def _check(self, weather: str, weather_filter: str):
         pattern = re.compile(r"^今日天气: (.*)。")

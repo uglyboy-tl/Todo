@@ -10,13 +10,13 @@ PRESET_SCRIPTS = [
     "time_filter",
     "date_filter",
     "weather_filter",
-    "check_holiday",
-    "weather",
+    "check_date",
+    "check_weather",
     "notify",
 ]
 
 OPTION_SCRITPS = [
-    "weather",
+    "check_weather",
     "notify",
 ]
 
