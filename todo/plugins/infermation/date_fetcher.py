@@ -12,7 +12,7 @@ HOLIDAY_URL = "https://timor.tech/api/holiday/info/{}"
 
 
 @dataclass
-class DateChecker(Webhook):
+class DateFetcher(Webhook):
     url: str = HOLIDAY_URL
     language: str = "zh"
     location: Optional[str] = None

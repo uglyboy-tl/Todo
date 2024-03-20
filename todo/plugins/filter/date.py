@@ -8,7 +8,7 @@ from todo.project import BaseFilter
 class DateFilter(BaseFilter):
     regex: str = r"^holiday|workday$"
     data_name: str = "#Date"
-    script_name: str = "check_date"
+    script_name: str = "fetch_date"
 
     def _check(self, data: str, date_filter: str):
         obj = json.loads(data)

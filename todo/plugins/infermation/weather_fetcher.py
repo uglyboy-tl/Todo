@@ -12,7 +12,7 @@ WEATHER_URL = "https://{}wttr.in/{}?format=j1"
 
 
 @dataclass
-class WeatherChecker(Webhook):
+class WeatherFetcher(Webhook):
     url: str = WEATHER_URL
     language: str = "zh"
     location: Optional[str] = None
