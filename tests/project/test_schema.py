@@ -20,7 +20,7 @@ def test_config_load():
     assert isinstance(config, BaseConfig)
     assert config.name == "test"
     assert isinstance(config.script_configs, list)
-    assert len(config.script_configs) == 1  # Assuming the config file is empty
+    assert len(config.script_configs) == 0  # Assuming the config file is empty
 
 
 def test_config_load_with_data():
@@ -43,7 +43,7 @@ def test_config_load_with_data():
     assert isinstance(config, BaseConfig)
     assert config.name == "test"
     assert isinstance(config.script_configs, list)
-    assert len(config.script_configs) == 3
+    assert len(config.script_configs) == 2
     assert config.script_configs[0]["name"] == "alert1"
     assert config.script_configs[0]["priority"] == 1
     assert config.script_configs[1]["name"] == "reminder"
@@ -53,7 +53,9 @@ def test_config_load_with_data():
 def test_base_config_get_init_config():
     # Setup
     config = BaseConfig(
-        name="test", script_configs=[{"name": "alert1", "priority": 1}, {"name": "reminder", "priority": 2}]
+        name="test",
+        start_script="start",
+        script_configs=[{"name": "alert1", "priority": 1}, {"name": "reminder", "priority": 2}],
     )
 
     # Call
@@ -61,8 +63,8 @@ def test_base_config_get_init_config():
 
     # Assert
     assert isinstance(init_config, dict)
-    assert init_config["name"] == "init"
-    assert init_config["type"] == "init"
+    assert init_config["name"] == "start"
+    assert init_config["type"] == "start"
     assert len(config.script_configs) == 3
 
 
@@ -77,7 +79,7 @@ def test_base_config_add_init_script():
     formatted_todo = config.format_todo(todo, False)
 
     # Assert
-    assert len(todotxt.todo_list) == 1
+    assert len(todotxt.todo_list) == 0
     assert formatted_todo.project == ["test"]
 
 
@@ -92,7 +94,7 @@ def test_base_config_load():
     assert isinstance(config, BaseConfig)
     assert config.name == "test"
     assert isinstance(config.script_configs, list)
-    assert len(config.script_configs) == 3
+    assert len(config.script_configs) == 2
     assert config.script_configs[0]["name"] == "alert1"
     assert config.script_configs[0]["priority"] == 1
     assert config.script_configs[1]["name"] == "reminder"
@@ -112,7 +114,7 @@ def test_base_config_load_all():
     assert isinstance(configs[0], BaseConfig)
     assert configs[0].name == "test"
     assert isinstance(configs[0].script_configs, list)
-    assert len(configs[0].script_configs) == 3
+    assert len(configs[0].script_configs) == 2
     assert configs[0].script_configs[0]["name"] == "alert1"
     assert configs[0].script_configs[0]["priority"] == 1
     assert configs[0].script_configs[1]["name"] == "reminder"

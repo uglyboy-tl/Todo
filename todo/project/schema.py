@@ -57,22 +57,21 @@ class Parameter:
 
 class BaseConfig(BaseModel):
     name: str = ""
-    start_script: Optional[str] = "init"
+    start_script: Optional[str] = None
     script_configs: List[Dict[str, Any]] = []
 
     def model_post_init(self, __context: Any):
         self._get_init_config()
 
-    def _get_init_config(self, is_system: bool = False):
+    def _get_init_config(self):
+        if not self.start_script:
+            return None
         init_list = [item for item in self.script_configs if item.get("name") == self.start_script]
         assert len(init_list) <= 1, f"Only one init script is allowed in {self.name}"
         if init_list:
             init_config = init_list[0]
         else:
-            if is_system:
-                init_config = {"name": f"{self.start_script}", "type": "sysinit"}
-            else:
-                init_config = {"name": f"{self.start_script}", "type": "init"}
+            init_config = {"name": f"{self.start_script}", "type": f"{self.start_script}"}
             self.script_configs.append(init_config)
         return init_config
 
@@ -86,8 +85,8 @@ class BaseConfig(BaseModel):
             TodoItem(f"@{self.start_script} @#HIDDEN +{self.name}", priority="A", due=datetime.now()), head=True
         )
 
-    def format_todo(self, todo: TodoItem, is_system: bool):
-        if self.name not in todo.project and not is_system:
+    def format_todo(self, todo: TodoItem, disable_project_name: bool):
+        if self.name not in todo.project and not disable_project_name:
             todo.add_project(self.name)
         return todo
 

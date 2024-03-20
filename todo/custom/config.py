@@ -28,11 +28,17 @@ class Config(BaseConfig):
     alert_days: int = 0
 
     def model_post_init(self, __context: Any):
+        if not self.start_script:
+            if self.name == "SYSTEM":
+                self.start_script = "sysinit"
+            else:
+                self.start_script = "init"
+
         self._dict: [str, Dict[str, Any]] = {
             item.get("type") if item.get("type") else item["name"]: item for item in self.script_configs
         }
 
-        self._init_config = self._get_init_config(self.name == "SYSTEM")
+        self._init_config = self._get_init_config()
 
         self._process_script_config("archive", self.archive_recurrence and self.name == "SYSTEM")
         self._process_script_config("unfinished", self.due_with_unfinished)
@@ -52,12 +58,12 @@ class Config(BaseConfig):
                 config = self._dict.pop(name)
                 self.script_configs.remove(config)
 
-    def _get_init_config(self, is_system: bool = False):
-        init_config = super()._get_init_config(is_system)
+    def _get_init_config(self):
+        init_config = super()._get_init_config()
         self._dict[self.start_script] = init_config
         init_config["due_with_unfinished"] = self.due_with_unfinished
         init_config["alert_days"] = self.alert_days
-        if is_system:
+        if self.name == "SYSTEM":
             init_config["archive_recurrence"] = self.archive_recurrence
         return init_config
 

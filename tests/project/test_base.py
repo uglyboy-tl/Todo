@@ -179,7 +179,7 @@ def test_process_add_option():
     project(todo_txt)
 
     # Assert
-    assert len(todo_txt["project1"]) == 3
+    assert len(todo_txt["project1"]) == 2
 
 
 def test_process_execute_option():
@@ -194,7 +194,7 @@ def test_process_execute_option():
     project(todo_txt)
 
     # Assert
-    assert len(todo_txt["project1"].alert()) == 1
+    assert len(todo_txt["project1"].alert()) == 0
 
 
 def test_process_remove_option():
@@ -209,7 +209,7 @@ def test_process_remove_option():
     project(todo_txt)
 
     # Assert
-    assert len(todo_txt["project1"]) == 1
+    assert len(todo_txt["project1"]) == 0
 
 
 def test_process_break_option():
@@ -224,7 +224,7 @@ def test_process_break_option():
     project(todo_txt)
 
     # Assert
-    assert len(todo_txt["project1"]) == 2
+    assert len(todo_txt["project1"]) == 1
 
 
 def test_process_done_option():
@@ -269,4 +269,4 @@ def test_process_archive_option():
     project(todo_txt)
 
     # Assert
-    assert len(todo_txt["project1"]) == 1
+    assert len(todo_txt["project1"]) == 0
