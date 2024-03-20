@@ -6,7 +6,7 @@ from stevedore import ExtensionManager
 
 from .base import BaseProject
 from .config import Config, merge_system_scripts
-from .context import BaseContext, BaseFilter
+from .context import BaseContext, BaseFilter, BaseNotify
 
 
 @dataclass
@@ -40,7 +40,7 @@ class Project(BaseProject):
                 key=lambda x: 2
                 if isinstance(x, BaseFilter)
                 else 1
-                if x.name not in ["done", "update", "notify"]
+                if x.name not in ["done", "update"] or isinstance(x, BaseNotify)
                 else 0,
                 reverse=True,
             )
