@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable, Optional
@@ -9,7 +10,7 @@ from .base import BaseContext
 
 
 @dataclass
-class BaseInit(BaseContext):
+class BaseInit(BaseContext, metaclass=ABCMeta):
     def __call__(self, todo: TodoItem, process):
         if self.name in todo.context:
             process(todo, Option.MODIFY_ALL)
