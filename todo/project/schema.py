@@ -82,7 +82,7 @@ class BaseConfig(BaseModel):
     def add_init_script(self, todotxt: TodoTxt):
         if not self.start_script:
             return
-        need_to_remove = todotxt.search(self.start_script).copy()
+        need_to_remove = todotxt[self.name].search(self.start_script).copy()
         for todo in need_to_remove:
             todotxt.remove(todo)
         todotxt.append(
