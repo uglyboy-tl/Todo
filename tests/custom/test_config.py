@@ -30,8 +30,7 @@ class TestContext2(BaseContext):
 def project_init(file_path: str):
     data = {
         "name": "test",
-        "due_with_unfinished": False,
-        "alert_days": 0,
+        "disable_unfinished": True,
         "script_configs": [
             {"name": "addone", "type": "test1"},
             {"name": "test2"},
@@ -72,7 +71,7 @@ def test_config_load():
     assert config._dict["init"] == init_config
     project = Project(config)
     print(project.scripts)
-    assert len(project.scripts) == 3 + len(PRESET_SCRIPTS)
+    assert len(project.scripts) == 4 + len(PRESET_SCRIPTS)  # init, unfinished
 
     # Call
     todo_txt1 = TodoTxt(todo_list=[])
@@ -85,9 +84,9 @@ def test_config_load():
     todo_item = TodoItem(f"Test todo @addone +test due:{TODAY}")
     todo_txt2.append(todo_item)
     project(todo_txt2)
-    assert len(todo_txt2) == 3
+    assert len(todo_txt2) == 5  # init, unfinished, x unfinished, addone, done
     assert todo_txt2[1].completed is True
-    assert todo_txt2[2].description == "Test New todo +test"
+    assert todo_txt2[3].description == "Test New todo +test"
 
 
 def test_config_load_contexts():
@@ -97,7 +96,7 @@ def test_config_load_contexts():
     todo_txt = TodoTxt(todo_list=[])
     config = Config.load(file_path, "test")
     project = Project(config)
-    assert len(project.scripts) == 3 + len(PRESET_SCRIPTS)
+    assert len(project.scripts) == 4 + len(PRESET_SCRIPTS)
     print(project.scripts)
     num = len(
         [script for script in project.scripts if script.name in ["update", "done"] or isinstance(script, BaseNotify)]

@@ -52,7 +52,7 @@ class Config(BaseConfig):
                     config.update({param: getattr(self, param) for param in params if hasattr(self, param)})
                 self.script_configs.append(config)
             elif params:
-                self._dict[name].update({param: self._init_config[param] for param in params})
+                self._dict[name].update({param: getattr(self, param) for param in params if hasattr(self, param)})
         else:
             if name in self._dict:
                 config = self._dict.pop(name)
