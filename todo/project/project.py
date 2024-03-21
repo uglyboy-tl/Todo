@@ -21,7 +21,6 @@ class Project(BaseProject):
                 self.alias = self.config.alias
             else:
                 self.alias.append(self.name)
-        logger.trace(f"Project:{self.name}\nAlias: {self.alias}")
         if self.config and not self.scripts:
             context_plugins_list: List[List[Type[BaseContext]]] = []
             context_type_list: List[Set[str]] = []
@@ -52,4 +51,6 @@ class Project(BaseProject):
                 else 1,
                 reverse=True,
             )
-            logger.trace(f"Project:{self.name}\nScripts: {[script.name for script in self.scripts]}")
+            logger.trace(
+                f"Project:{self.name}\nAlias: {self.alias}\nScripts: {[script.name for script in self.scripts]}"
+            )
