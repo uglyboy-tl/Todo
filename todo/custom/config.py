@@ -50,7 +50,7 @@ class Config(BaseConfig):
             if name not in self._dict:
                 config = {"name": name, "type": name}
                 if params:
-                    config.update({param: self._init_config[param] for param in params})
+                    config.update({param: getattr(self, param) for param in params if hasattr(self, param)})
                 self.script_configs.append(config)
             elif params:
                 self._dict[name].update({param: self._init_config[param] for param in params})
