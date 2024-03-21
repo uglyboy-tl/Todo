@@ -24,7 +24,7 @@ OPTION_SCRITPS = [
 
 class Config(BaseConfig):
     archive_recurrence: str = "1d"
-    due_with_unfinished: bool = True
+    handle_expired: bool = True
     alert_days: int = 0
     active_scripts: List[str] = []
 
@@ -42,8 +42,7 @@ class Config(BaseConfig):
         self._init_config = self._get_init_config()
 
         self._process_script_config("archive", self.archive_recurrence and self.name == "SYSTEM")
-        self._process_script_config("unfinished", self.due_with_unfinished)
-        self._process_script_config("alert", self.alert_days, ["alert_days", "active_scripts"])
+        self._process_script_config("unfinished", True, ["handle_expired", "alert_days", "active_scripts"])
 
     def _process_script_config(self, name: str, condition: bool, params: Optional[List[str]] = None):
         if condition:
@@ -62,8 +61,6 @@ class Config(BaseConfig):
     def _get_init_config(self):
         init_config = super()._get_init_config()
         self._dict[self.start_script] = init_config
-        init_config["due_with_unfinished"] = self.due_with_unfinished
-        init_config["alert_days"] = self.alert_days
         if self.name == "SYSTEM":
             init_config["archive_recurrence"] = self.archive_recurrence
         return init_config

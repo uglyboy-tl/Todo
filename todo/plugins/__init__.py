@@ -2,11 +2,10 @@ from .filter import DateFilter, TimeFilter, WeatherFilter
 from .infermation import IMAP, DateFetcher, WeatherFetcher, Webhook
 from .notify import Email, Gotify, Notify
 from .system import (
-    Alert,
     Archive,
     Done,
-    DueUnfinished,
     Shell,
+    Unfinished,
     Update,
 )
 
@@ -14,8 +13,7 @@ __all__ = [
     "Done",
     "Archive",
     "Update",
-    "DueUnfinished",
-    "Alert",
+    "Unfinished",
     "TimeFilter",
     "DateFilter",
     "WeatherFilter",

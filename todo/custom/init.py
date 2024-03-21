@@ -7,19 +7,14 @@ from todo.project import BaseInit, Option
 
 @dataclass
 class Init(BaseInit):
-    due_with_unfinished: bool = False
-    alert_days: int = 0
 
     def __call__(self, todo: TodoItem, process):
         if self.name in todo.context:
             process(todo, Option.MODIFY_ALL)
 
     def modify_all(self, _: TodoItem, todotxt: TodoTxt, process):
-        # 优先级A的未完成任务执行脚本
-        self._update_preset_todo("unfinished", self.due_with_unfinished, todotxt, process)
-
-        # 代办提醒脚本
-        self._update_preset_todo("alert", self.alert_days, todotxt, process)
+        # 未完成任务处理脚本
+        self._update_preset_todo("unfinished", True, todotxt, process)
 
 
 @dataclass
