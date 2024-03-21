@@ -40,7 +40,7 @@ sysinit = "todo.custom:SysInit"
 archive = "todo.plugins:Archive"
 shell = "todo.plugins:Shell"
 
-[tool.poetry.plugins."todo.project.生活"]
+[tool.poetry.plugins."todo.project.life"]
 outing = "todo.plugins.life:Outing"
 
 [tool.poetry.plugins."todo.project.test"]

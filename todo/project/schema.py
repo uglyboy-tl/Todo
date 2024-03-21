@@ -58,6 +58,7 @@ class Parameter:
 
 class BaseConfig(BaseModel):
     name: str = ""
+    alias: List[str] = []
     start_script: Optional[str] = None
     script_configs: List[Dict[str, Any]] = []
 
