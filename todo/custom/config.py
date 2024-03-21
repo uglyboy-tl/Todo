@@ -26,6 +26,7 @@ class Config(BaseConfig):
     archive_recurrence: str = "1d"
     due_with_unfinished: bool = True
     alert_days: int = 0
+    active_scripts: List[str] = []
 
     def model_post_init(self, __context: Any):
         if not self.start_script:
@@ -42,7 +43,7 @@ class Config(BaseConfig):
 
         self._process_script_config("archive", self.archive_recurrence and self.name == "SYSTEM")
         self._process_script_config("unfinished", self.due_with_unfinished)
-        self._process_script_config("alert", self.alert_days, ["alert_days"])
+        self._process_script_config("alert", self.alert_days, ["alert_days", "active_scripts"])
 
     def _process_script_config(self, name: str, condition: bool, params: Optional[List[str]] = None):
         if condition:
