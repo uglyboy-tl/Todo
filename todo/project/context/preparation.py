@@ -14,7 +14,7 @@ class BasePreparation(BaseContext, metaclass=ABCMeta):
 
     def __call__(self, todo: TodoItem, process):
         assert self.name in todo.context
-        if self.notify and todo.message and "#HIDDEN" not in todo.context:
+        if self.notify and todo.due and todo.message and "#HIDDEN" not in todo.context:
             diff = todo.due.date() - datetime.now().date()
             if diff.days > 0:
                 notify = TodoItem(f"距离：`{todo.message.strip()}` 还有{diff.days}天 @notify")

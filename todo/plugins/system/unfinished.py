@@ -31,9 +31,7 @@ class Unfinished(BaseContext):
                 process(notify, Option.EXECUTE)
 
     def _need_execute(self, todo: TodoItem):
-        return any(
-            True for context in todo.context if context in self.active_scripts and f"#{context}" not in todo.context
-        )
+        return any(True for context in todo.context if context in self.active_scripts)
 
     def _in_alert_days(self, todo: TodoItem):
         if self.alert_days <= 0:
