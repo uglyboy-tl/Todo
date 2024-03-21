@@ -5,7 +5,7 @@ from loguru import logger
 from stevedore import ExtensionManager
 
 from .base import BaseProject
-from .context import BaseContext, BaseFilter, BaseNotify
+from .context import BaseContext
 
 
 @dataclass
@@ -43,14 +43,7 @@ class Project(BaseProject):
                     continue
                 self.scripts.append(script)
 
-            self.scripts.sort(
-                key=lambda x: 2
-                if isinstance(x, BaseFilter)
-                else 0
-                if x.name in ["done", "update"] or isinstance(x, BaseNotify)
-                else 1,
-                reverse=True,
-            )
+            self.scripts.sort(key=self.config.sort_score, reverse=True)
             logger.trace(
                 f"Project:{self.name}\nAlias: {self.alias}\nScripts: {[script.name for script in self.scripts]}"
             )

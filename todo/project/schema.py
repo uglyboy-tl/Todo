@@ -9,6 +9,8 @@ from typing_extensions import Self
 
 from todo.core import TodoItem, TodoTxt
 
+from .context import BaseContext
+
 
 class Option(Enum):
     FORMAT = 0  # 第0位
@@ -97,6 +99,10 @@ class BaseConfig(BaseModel):
     @staticmethod
     def merge_preset_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         return script_configs
+
+    @staticmethod
+    def sort_score(script: BaseContext):
+        return 0
 
     @classmethod
     def load(cls, file_path: str, name: str = ""):
