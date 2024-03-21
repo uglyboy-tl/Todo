@@ -12,7 +12,7 @@ from .base import BaseContext
 
 @dataclass
 class BaseFilter(BaseContext, metaclass=ABCMeta):
-    regex: Optional[str] = field(init=False, default=None)
+    regex: str
     pattern: Optional[re.Pattern] = field(init=False, default=None)
     data_name: str = ""
     script_name: str = ""

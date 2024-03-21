@@ -5,7 +5,7 @@ from loguru import logger
 
 from todo.core import TodoItem, TodoTxt
 
-from .context import BaseContext
+from .context import BaseContext, BaseFilter
 from .schema import BaseConfig, Option, Parameter
 
 
@@ -26,59 +26,57 @@ class BaseProject:
         logger.trace(f"TodoList:\n{todolist}")
         todolist = todolist.todo_list
 
-        def process(todo: TodoItem, type: Union[Parameter, int] = 1) -> Union[TodoItem, List[TodoItem]]:
-            if isinstance(type, int):
-                type = Parameter(type)
-            if type == Option.SEARCH:
+        def process(todo: TodoItem, param: Union[Parameter, int] = 1) -> Union[TodoItem, List[TodoItem]]:
+            if isinstance(param, int):
+                param = Parameter(param)
+            if param == Option.SEARCH:
                 assert len(todo.context) == 1
                 query = todo.context[0]
                 return todotxt.search(query)
-            if type == Option.FORMAT:
+            if param == Option.FORMAT:
                 todo = self._format_todo(todo, self.name == todotxt.root_project)
-            if type == Option.ADD:
+            if param == Option.ADD:
                 todotxt.append(todo)
                 logger.trace(f"Append todo: {todo}")
-            if type == Option.EXECUTE:
+            if param == Option.EXECUTE:
                 todolist.append(todo)
-            if type == Option.REMOVE:
+            if param == Option.REMOVE:
                 todotxt.remove(todo)
                 logger.trace(f"Remove todo: {todo}")
                 if todo in todolist:
                     todolist.remove(todo)
-            if type == Option.BREAK:
+            if param == Option.BREAK:
                 todo.context.append("#break")
-            if type == Option.DONE:
+            if param == Option.DONE:
                 todotxt.done(todo)
-            if type == Option.MODIFY_ALL:
+            if param == Option.MODIFY_ALL:
                 todo.context.append("#all")
-            if type == Option.ARCHIVE:
-                todo.context.append("#archive")
+            if param == Option.ARCHIVE:
+                todotxt.archive()
+                logger.trace("Archiving completed todos")
             return todo
 
         index = 0
         while index < len(todolist):
             todo = todolist[index]
             logger.trace(f"Processing: {todo}")
-            if "#break" in todo.context:
-                todo.context.remove("#break")
             if "#all" in todo.context:
                 todo.context.remove("#all")
-            if "#archive" in todo.context:
-                todo.context.remove("#archive")
+            if "#break" in todo.context:
+                todo.context.remove("#break")
             for script in self.scripts:
                 if script.match(todo.context):
                     script(todo, process)
                     if "#all" in todo.context:
-                        logger.trace(f"Modifying All with @{script.name}: {todo}")
                         todo.context.remove("#all")
+                        logger.trace(f"Modifying All with @{script.name}: {todo}")
                         script.modify_all(todo, todotxt[self.name], process)
-                    if "#archive" in todo.context:
-                        logger.trace("Archiving TodoTXT")
-                        todo.context.remove("#archive")
-                        todotxt.archive()
                     if "#break" in todo.context:
-                        logger.trace(f"Skipping: {todo}")
                         todo.context.remove("#break")
+                        # Filter 才可以跳过
+                        if not isinstance(script, BaseFilter):
+                            continue
+                        logger.trace(f"Skipping: {todo}")
                         break
             index += 1
 

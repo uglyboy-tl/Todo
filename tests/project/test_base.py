@@ -2,7 +2,7 @@ import time
 from dataclasses import dataclass
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, Option
+from todo.project import BaseContext, BaseFilter, Option
 from todo.project.base import BaseProject
 
 TODAY = time.strftime("%Y-%m-%d")
@@ -34,11 +34,15 @@ class TestContext3(BaseContext):
 
 
 @dataclass
-class TestContext4(BaseContext):
+class TestContext4(BaseFilter):
     name: str = "break"
+    regex: str = r"^break$"
 
     def __call__(self, todo, process=lambda x, _: x):
         process(todo, Option.BREAK)
+
+    def _check(self, data: str, matched_context: str):
+        return False
 
 
 @dataclass
