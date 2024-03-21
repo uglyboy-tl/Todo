@@ -6,7 +6,7 @@ from todo.project import BaseFilter
 
 @dataclass
 class WeatherFilter(BaseFilter):
-    regex: str = r"^晴天|阴天$"
+    regex: str = r"^晴天|小雨$"
     data_name: str = "#Weather"
     script_name: str = "fetch_weather"
 
