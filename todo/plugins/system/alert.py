@@ -17,15 +17,22 @@ class Alert(BaseContext):
 
     def modify_all(self, _: TodoItem, todotxt: TodoTxt, process):
         for todo in todotxt:
-            if (
-                not todo.completed
-                and todo.due
-                and todo.due.date() > datetime.now().date()
-                and todo.due.date() <= datetime.now().date() + timedelta(days=self.alert_days)
-            ):
-                if any(True for context in todo.context if context in self.active_scripts):
-                    process(todo, Option.EXECUTE)
-                elif todo.message and "#HIDDEN" not in todo.context:
-                    diff = todo.due.date() - datetime.now().date()
-                    notify = TodoItem(f"距离：`{todo.message.strip()}` 还有{diff.days}天 @notify")
-                    process(notify, Option.EXECUTE)
+            if todo.completed:
+                continue
+            in_alert_days = self._in_alert_days(todo)
+            if self._need_execute(todo) and (not todo.due or in_alert_days):
+                process(todo, Option.EXECUTE)
+            elif todo.due and in_alert_days and todo.message and "#HIDDEN" not in todo.context:
+                diff = todo.due.date() - datetime.now().date()
+                notify = TodoItem(f"距离：`{todo.message.strip()}` 还有{diff.days}天 @notify")
+                process(notify, Option.EXECUTE)
+
+    def _need_execute(self, todo: TodoItem):
+        return any(
+            True for context in todo.context if context in self.active_scripts and f"#{context}" not in todo.context
+        )
+
+    def _in_alert_days(self, todo: TodoItem):
+        today = datetime.now().date()
+        due = todo.due.date()
+        return due > today and due <= today + timedelta(days=self.alert_days)
