@@ -34,7 +34,7 @@ class Unfinished(BaseContext):
         return any(True for context in todo.context if context in self.active_scripts)
 
     def _in_alert_days(self, todo: TodoItem):
-        if self.alert_days <= 0:
+        if not todo.due or self.alert_days <= 0:
             return False
         today = datetime.now().date()
         due = todo.due.date()
