@@ -21,7 +21,7 @@ class BaseInit(BaseContext):
         condition: bool,
         todotxt: TodoTxt,
         process: Callable,
-        noneed_execute: bool = False,
+        need_execute_today: bool = True,
         preset: Optional[TodoItem] = None,
     ):
         if not preset:
@@ -29,8 +29,8 @@ class BaseInit(BaseContext):
         if condition:
             if not self._is_script_completed_today(name, todotxt):
                 script = self._find_newest_todo(name, todotxt, process)
-                if script and (noneed_execute or script.due.date() != datetime.now().date()):
-                    if not noneed_execute:
+                if script and not (need_execute_today and script.due.date() == datetime.now().date()):
+                    if need_execute_today:
                         script.due = datetime.now()
                         process(script, Option.EXECUTE)
                 elif not script:

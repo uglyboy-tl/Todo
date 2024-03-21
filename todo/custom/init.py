@@ -38,7 +38,7 @@ class SysInit(Init):
             bool(self.archive_recurrence),
             todotxt,
             process,
-            True,
+            False,
             TodoItem("Preset", priority="A", recurrence=self.archive_recurrence),
         )
 
