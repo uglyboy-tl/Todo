@@ -7,7 +7,6 @@ from todo.project import BaseInit, Option
 
 @dataclass
 class Init(BaseInit):
-
     def __call__(self, todo: TodoItem, process):
         if self.name in todo.context:
             process(todo, Option.MODIFY_ALL)
