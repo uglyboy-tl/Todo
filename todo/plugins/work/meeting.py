@@ -1,6 +1,7 @@
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime
 
 from todo.core import TodoItem
 from todo.project import BaseNotify, BasePreparation, Option
@@ -20,6 +21,9 @@ class Meeting(BasePreparation):
                 times.append(context)
         assert len(times) == 1
         time = times[0]
-        task = TodoItem(f"{json.dumps({'members': members, 'time': time},ensure_ascii=False)} @meeting_room @notify")
+        task = TodoItem(
+            f"{json.dumps({'members': members, 'time': time, 'date': todo.due.strftime('%Y-%m-%d')},ensure_ascii=False)} @meeting_room @update @#HIDDEN",
+            due=datetime.now(),
+        )
         process(task, Option.FORMAT | Option.ADD | Option.EXECUTE)
         todo.add_context(f"#{self.name}")
