@@ -1,16 +1,14 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import List
 
 from todo.core import TodoItem, TodoTxt
-from todo.project import BaseContext, Option
+from todo.project import BaseContext, BasePreparation, Option
 
 
 @dataclass
 class Unfinished(BaseContext):
     handle_expired: bool = True
     alert_days: int = 1
-    active_scripts: List[str] = field(default_factory=list)
 
     def __call__(self, todo: TodoItem, process):
         if self.name in todo.context:
@@ -21,7 +19,7 @@ class Unfinished(BaseContext):
             if todo.completed:
                 continue
             in_alert_days = self._in_alert_days(todo)
-            if self._need_execute(todo) and (not todo.due or in_alert_days):
+            if self._need_execute(todo, process) and (not todo.due or in_alert_days):
                 process(todo, Option.EXECUTE)
             elif self.handle_expired and todo.due and todo.due.date() < datetime.now().date() and todo.context:
                 process(todo, Option.EXECUTE)
@@ -30,11 +28,14 @@ class Unfinished(BaseContext):
                 notify = TodoItem(f"距离：`{todo.message.strip()}` 还有{diff.days}天 @notify")
                 process(notify, Option.EXECUTE)
 
-    def _need_execute(self, todo: TodoItem):
-        return any(True for context in todo.context if context in self.active_scripts)
+    def _need_execute(self, todo: TodoItem, process):
+        type_list = process(todo, Option.TYPE)
+        return any(True for context in type_list if isinstance(context, BasePreparation))
 
     def _in_alert_days(self, todo: TodoItem):
-        if not todo.due or self.alert_days <= 0:
+        if not todo.due:
+            return True
+        if self.alert_days <= 0:
             return False
         today = datetime.now().date()
         due = todo.due.date()
