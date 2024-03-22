@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from todo.core import TodoItem
-from todo.project import BaseContext, BaseFilter, BaseNotify, BasePreparation
+from todo.project import BaseContext, BaseFilter, BasePreparation
 from todo.project.schema import BaseConfig
 
 # 相当于 context 的保留字段
