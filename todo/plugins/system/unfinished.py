@@ -30,7 +30,10 @@ class Unfinished(BaseContext):
 
     def _need_execute(self, todo: TodoItem, process):
         type_list = process(todo, Option.TYPE)
-        return any(True for context in type_list if isinstance(context, BasePreparation))
+        for context in type_list:
+            if isinstance(context, BasePreparation):
+                return True
+        return False
 
     def _in_alert_days(self, todo: TodoItem):
         if not todo.due:

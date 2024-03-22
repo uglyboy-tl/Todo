@@ -32,6 +32,6 @@ class DateFetcher(Webhook):
             "type": data["type"]["type"],
         }
 
-        holiday_data = TodoItem(f"{json.dumps(obj)} @#Date @#HIDDEN")
+        holiday_data = TodoItem(f"{json.dumps(obj, ensure_ascii=False)} @#Date @#HIDDEN")
         holiday_data.done()
         process(holiday_data, Option.FORMAT | Option.ADD)

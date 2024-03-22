@@ -43,8 +43,7 @@ class BaseFilter(BaseContext, metaclass=ABCMeta):
             if self._no_getdata_todo(self.script_name, process):
                 getdata_todo = TodoItem(f"@{self.script_name} @done @#HIDDEN")
                 process(getdata_todo, Option.ADD | Option.EXECUTE)
-            process(todo, Option.BREAK)
-            process(todo, Option.EXECUTE)
+            process(todo, Option.BREAK | Option.EXECUTE)
 
     def _get_data(self, name: str, process: Callable) -> Optional[str]:
         if name == "":

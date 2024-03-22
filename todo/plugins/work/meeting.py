@@ -20,6 +20,6 @@ class Meeting(BasePreparation):
                 times.append(context)
         assert len(times) == 1
         time = times[0]
-        task = TodoItem(f"{json.dumps({'members': members, 'time': time})} @meeting_room @notify")
+        task = TodoItem(f"{json.dumps({'members': members, 'time': time},ensure_ascii=False)} @meeting_room @notify")
         process(task, Option.FORMAT | Option.ADD | Option.EXECUTE)
         todo.add_context(f"#{self.name}")
