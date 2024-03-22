@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from todo.core import TodoItem
+from todo.project import BaseContext, BaseFilter, BaseNotify
 from todo.project.schema import BaseConfig
 
 # 相当于 context 的保留字段
@@ -60,7 +61,6 @@ class Config(BaseConfig):
 
     def _get_init_config(self):
         init_config = super()._get_init_config()
-        self._dict[self.start_script] = init_config
         if self.name == "SYSTEM":
             init_config["archive_recurrence"] = self.archive_recurrence
         return init_config
@@ -86,3 +86,12 @@ class Config(BaseConfig):
             ]
         )
         return merge_scripts
+
+    @staticmethod
+    def sort_score(script: BaseContext):
+        if isinstance(script, BaseFilter):
+            return 2
+        elif script.name in ["done", "update"] or isinstance(script, BaseNotify):
+            return 0
+        else:
+            return 1

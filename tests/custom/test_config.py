@@ -66,9 +66,6 @@ def test_config_load():
     file_path = "tests/data/test.yaml"
     project_init(file_path)
     config = Config.load(file_path, "test")
-    init_config = config._get_init_config()
-    assert "init" in config._dict
-    assert config._dict["init"] == init_config
     project = Project(config)
     print(project.scripts)
     assert len(project.scripts) == 4 + len(PRESET_SCRIPTS)  # init, unfinished
