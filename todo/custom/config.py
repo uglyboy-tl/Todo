@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from todo.core import TodoItem
-from todo.project import BaseContext, BaseFilter, BaseNotify
+from todo.project import BaseContext, BaseFilter, BaseNotify, BasePreparation
 from todo.project.schema import BaseConfig
 
 # 相当于 context 的保留字段
@@ -89,7 +89,9 @@ class Config(BaseConfig):
 
     @staticmethod
     def sort_score(script: BaseContext):
-        if isinstance(script, BaseFilter):
+        if isinstance(script, BasePreparation):
+            return 3
+        elif isinstance(script, BaseFilter):
             return 2
         elif script.name in ["done", "update"] or isinstance(script, BaseNotify):
             return 0

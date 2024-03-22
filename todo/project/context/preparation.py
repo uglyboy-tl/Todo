@@ -11,6 +11,7 @@ from .base import BaseContext
 @dataclass
 class BasePreparation(BaseContext, metaclass=ABCMeta):
     notify: bool = True
+    message: str = "{}"
 
     def __call__(self, todo: TodoItem, process):
         assert self.name in todo.context
@@ -19,6 +20,9 @@ class BasePreparation(BaseContext, metaclass=ABCMeta):
             if diff.days > 0:
                 notify = TodoItem(f"距离：`{todo.message.strip()}` 还有{diff.days}天 @notify")
                 process(notify, Option.EXECUTE)
+            elif diff.days == 0:
+                notify = TodoItem(f"{self.message.format(todo.message.strip())} @notify")
+                process(notify, Option.EXECUTE)
         if f"#{self.name}" in todo.context:
             return
         else:
@@ -26,4 +30,4 @@ class BasePreparation(BaseContext, metaclass=ABCMeta):
 
     @abstractmethod
     def _process(self, todo: TodoItem, process):
-        pass
+        todo.add_context(f"#{self.name}")
