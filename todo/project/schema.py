@@ -60,10 +60,10 @@ class Parameter:
 
 
 class BaseConfig(BaseModel):
-    name: str = ""
-    alias: List[str] = []
-    start_script: Optional[str] = None
-    script_configs: List[Dict[str, Any]] = []
+    name: str = ""  # Project 名称
+    alias: List[str] = []  # Project 可能会使用的插件库（脚本依赖插件库）
+    start_script: Optional[str] = None  # Project 启动时执行的脚本
+    script_configs: List[Dict[str, Any]] = []  # Project 中会被使用的脚本配置
 
     @model_validator(mode="after")
     def verify_config(self) -> Self:
@@ -71,6 +71,9 @@ class BaseConfig(BaseModel):
         return self
 
     def _get_init_config(self):
+        """
+        获取初始化脚本配置，若不存在则根据 start_script 选项生成(默认无初始化脚本)
+        """
         if not self.start_script:
             return None
         init_list = [item for item in self.script_configs if item.get("name") == self.start_script]
@@ -83,6 +86,9 @@ class BaseConfig(BaseModel):
         return init_config
 
     def add_init_script(self, todotxt: TodoTxt):
+        """
+        添加初始化 todo（无初始化脚本时，不添加）
+        """
         if not self.start_script:
             return
         need_to_remove = todotxt[self.name].search(self.start_script).copy()
@@ -93,16 +99,25 @@ class BaseConfig(BaseModel):
         )
 
     def format_todo(self, todo: TodoItem, disable_project_name: bool):
+        """
+        根据 Project 配置信息，格式化 todo
+        """
         if self.name not in todo.project and not disable_project_name:
             todo.add_project(self.name)
         return todo
 
     @staticmethod
     def merge_preset_scripts(script_configs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        合并预设脚本
+        """
         return script_configs
 
     @staticmethod
     def sort_score(script: BaseContext):
+        """
+        脚本排序分数（在同一条 todo 中，脚本排序分越高越先执行）
+        """
         return 1
 
     @classmethod
