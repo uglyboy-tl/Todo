@@ -93,7 +93,7 @@ class Config(BaseConfig):
             return 3
         elif isinstance(script, BaseFilter):
             return 2
-        elif script.name in ["done", "update"] or isinstance(script, BaseNotify):
+        elif script.name in ["done", "update"]:
             return 0
         else:
             return 1

@@ -95,9 +95,7 @@ def test_config_load_contexts():
     project = Project(config)
     assert len(project.scripts) == 4 + len(PRESET_SCRIPTS)
     print(project.scripts)
-    num = len(
-        [script for script in project.scripts if script.name in ["update", "done"] or isinstance(script, BaseNotify)]
-    )
+    num = len([script for script in project.scripts if config.sort_score(script) == 0])
     reminder = project.scripts[len(PRESET_SCRIPTS) - num]
     alert = project.scripts[len(PRESET_SCRIPTS) - num + 1]
 

@@ -103,7 +103,7 @@ class BaseConfig(BaseModel):
 
     @staticmethod
     def sort_score(script: BaseContext):
-        return 0
+        return 1
 
     @classmethod
     def load(cls, file_path: str, name: str = ""):
