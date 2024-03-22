@@ -42,6 +42,9 @@ shell = "todo.plugins:Shell"
 [tool.poetry.plugins."todo.project.life"]
 outing = "todo.plugins.life:Outing"
 
+[tool.poetry.plugins."todo.project.work"]
+meeting = "todo.plugins.work:Meeting"
+
 [tool.poetry.plugins."todo.project.test"]
 test1 = "tests.custom.test_config:TestContext1"
 test2 = "tests.custom.test_config:TestContext2"
