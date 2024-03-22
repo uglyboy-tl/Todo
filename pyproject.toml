@@ -18,7 +18,7 @@ gotify = "^0.6.0"
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.2"
 
-[tool.poetry.plugins."todo.project"]
+[tool.poetry.plugins."todo.plugins.base"]
 init = "todo.custom:Init"
 done = "todo.plugins:Done"
 update = "todo.plugins:Update"
@@ -34,18 +34,18 @@ notify = "todo.plugins:Notify"
 gotify = "todo.plugins:Gotify"
 email = "todo.plugins:Email"
 
-[tool.poetry.plugins."todo.project.SYSTEM"]
+[tool.poetry.plugins."todo.plugins.system"]
 sysinit = "todo.custom:SysInit"
 archive = "todo.plugins:Archive"
 shell = "todo.plugins:Shell"
 
-[tool.poetry.plugins."todo.project.life"]
+[tool.poetry.plugins."todo.plugins.life"]
 outing = "todo.plugins.life:Outing"
 
-[tool.poetry.plugins."todo.project.work"]
+[tool.poetry.plugins."todo.plugins.work"]
 meeting = "todo.plugins.work:Meeting"
 
-[tool.poetry.plugins."todo.project.test"]
+[tool.poetry.plugins."todo.plugins.test"]
 test1 = "tests.custom.test_config:TestContext1"
 test2 = "tests.custom.test_config:TestContext2"
 

@@ -12,7 +12,7 @@ from todo.project import BaseContext
 
 
 def test_load_as_extensions():
-    context_plugins: List[Type[BaseContext]] = ExtensionManager(namespace="todo.project", invoke_on_load=False)
+    context_plugins: List[Type[BaseContext]] = ExtensionManager(namespace="todo.plugins.base", invoke_on_load=False)
     assert "email" in [context.name for context in context_plugins]
     for context_type in context_plugins:
         if context_type.name != "email":

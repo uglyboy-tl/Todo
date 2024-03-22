@@ -29,6 +29,11 @@ class Config(BaseConfig):
     alert_days: int = 0
 
     def model_post_init(self, __context: Any):
+        if not self.alias:
+            self.alias.append(self.name)
+        if "base" not in self.alias:
+            self.alias.append("base")
+
         if not self.start_script:
             if self.name == "SYSTEM":
                 self.start_script = "sysinit"

@@ -24,9 +24,8 @@ class Project(BaseProject):
         if self.config and not self.scripts:
             context_plugins_list: List[List[Type[BaseContext]]] = []
             context_type_list: List[Set[str]] = []
-            context_plugins_list.append(ExtensionManager(namespace="todo.project", invoke_on_load=False))
             for alias in self.alias:
-                context_plugins_list.append(ExtensionManager(namespace=f"todo.project.{alias}", invoke_on_load=False))
+                context_plugins_list.append(ExtensionManager(namespace=f"todo.plugins.{alias}", invoke_on_load=False))
             for context_plugins in context_plugins_list:
                 context_type_list.append({context.name for context in context_plugins})
 
