@@ -5,7 +5,7 @@ from loguru import logger
 
 from todo.core import TodoItem, TodoTxt
 
-from .context import BaseContext, BaseFilter
+from .context import BaseContext, BaseFilter, BasePreparation
 from .schema import BaseConfig, Option, Parameter
 
 
@@ -26,7 +26,9 @@ class BaseProject:
         logger.trace(f"TodoList:\n{todolist}")
         todolist = todolist.todo_list
 
-        def process(todo: TodoItem, param: Union[Parameter, int] = 1) -> Union[TodoItem, List[TodoItem]]:
+        def process(
+            todo: TodoItem, param: Union[Parameter, int] = 1
+        ) -> Union[TodoItem, List[TodoItem], List[BaseContext]]:
             if isinstance(param, int):
                 param = Parameter(param)
             if param == Option.SEARCH:
@@ -54,6 +56,12 @@ class BaseProject:
             if param == Option.ARCHIVE:
                 todotxt.archive()
                 logger.trace("Archiving completed todos")
+            if param == Option.TYPE:
+                type_list = []
+                for script in self.scripts:
+                    if script.match(todo.context):
+                        type_list.append(script)
+                return type_list
             return todo
 
         index = 0
@@ -73,8 +81,8 @@ class BaseProject:
                         script.modify_all(todo, todotxt[self.name], process)
                     if "#break" in todo.context:
                         todo.context.remove("#break")
-                        # Filter 才可以跳过
-                        if not isinstance(script, BaseFilter):
+                        # Filter 和 Preparation 才可以跳过
+                        if not isinstance(script, BaseFilter) and not isinstance(script, BasePreparation):
                             continue
                         logger.trace(f"Skipping: {todo}")
                         break

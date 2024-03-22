@@ -22,6 +22,7 @@ class Option(Enum):
     REMOVE = 6  # 第6位
     ARCHIVE = 7  # 第7位
     SEARCH = 8  # 第8位
+    TYPE = 9  # 第9位
     # 根据需要添加更多选项
 
     def __or__(self, other: Union["Option", int]) -> int:

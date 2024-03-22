@@ -24,9 +24,10 @@ class BasePreparation(BaseContext, metaclass=ABCMeta):
                 notify = TodoItem(f"{self.message.format(todo.message.strip())} @notify")
                 process(notify, Option.EXECUTE)
         if f"#{self.name}" in todo.context:
-            return
+            process(todo, Option.BREAK)
         else:
             self._process(todo, process)
+            process(todo, Option.BREAK)
 
     @abstractmethod
     def _process(self, todo: TodoItem, process):
