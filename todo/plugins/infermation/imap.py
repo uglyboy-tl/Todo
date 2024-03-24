@@ -46,8 +46,8 @@ class IMAP(BaseContext):
             # 将原始内容解析为邮件消息
             email_message = email.message_from_bytes(raw_email)
 
-            notify = TodoItem(f"{self.name} 收到来自 {email_message['From']} 的邮件 @notify @done")
+            notify = TodoItem(f"{self.name} 收到来自 {email_message['From']} 的邮件 @notify")
             process(notify, Option.EXECUTE)
         elif num > 1:
-            notify = TodoItem(f"{self.name} 收到 {num} 封邮件 @notify @done")
+            notify = TodoItem(f"{self.name} 收到 {num} 封邮件 @notify")
             process(notify, Option.EXECUTE)
