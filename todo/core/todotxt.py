@@ -171,6 +171,8 @@ class TodoTxt:
         if isinstance(index, int):
             return self.todo_list[index]
         elif isinstance(index, str):
+            if index.startswith("@"):
+                return TodoTxt(todo_list=[todo for todo in self.todo_list if index in todo.context], read_only=True)
             if index == self.root_project:
                 return TodoTxt(
                     todo_list=[
